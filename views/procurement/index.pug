@@ -39,18 +39,20 @@ block content
                             )
                                 | Detail
 
-                            a.btn.btn-warning.btn-sm.me-1.ml-3(
-                                href=`/procurement/${draft.id}/edit`
-                            )
-                                | Edit
-
-                            form(
-                                action=`/procurement/${draft.id}/delete`
-                                method='POST'
-                                style='display:inline;'
-                            )
-
-                                button.btn.btn-danger.btn-sm.ml-3(
-                                    type='submit'
+                            if draft.draft_status === 'DRAF'
+                                a.btn.btn-warning.btn-sm.me-1.ml-3(
+                                    href=`/procurement/${draft.id}/edit`
                                 )
-                                    | Hapus
+                                    | Edit
+
+                                form(
+                                    action=`/procurement/${draft.id}/delete`
+                                    method='POST'
+                                    style='display:inline;'
+                                )
+
+                                    button.btn.btn-danger.btn-sm.ml-3(
+                                        type='submit'
+                                        onclick="return confirm('Hapus draft ini?')"
+                                    )
+                                        | Hapus

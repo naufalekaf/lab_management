@@ -44,6 +44,9 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const procurementRoutes = require('./routes/procurementRoutes');
 const procurementItemRoutes = require('./routes/procurementItemRoutes');
 const reviewProcurementRoutes = require('./routes/reviewProcurementRoutes');
+const goodsReceiptRoutes = require('./routes/goodsReceiptRoutes');
+const consumableRoutes = require('./routes/consumableRoutes');
+const maintenanceRoutes = require('./routes/maintenanceRoutes');
 
 app.use(roomRoutes)
 app.use(userRoutes)
@@ -52,6 +55,9 @@ app.use(dashboardRoutes)
 app.use(procurementRoutes)
 app.use(procurementItemRoutes);
 app.use(reviewProcurementRoutes);
+app.use(goodsReceiptRoutes);
+app.use(consumableRoutes);
+app.use(maintenanceRoutes);
 
 app.use((req, res) => {
     res.status(404).render('errors/404');

@@ -1,0 +1,103 @@
+extends ../layouts/main
+
+block content
+  .container-fluid
+    .row.mb-4.align-items-center
+      .col-md-8
+        h1.m-0.text-white Tambah Katalog BHP
+        p.text-muted Daftarkan bahan habis pakai baru ke dalam sistem inventori lab.
+      .col-md-4.text-md-right
+        a.btn.btn-secondary(href="/consumables")
+          i.fas.fa-arrow-left.mr-1
+          | Kembali
+
+    .row
+      .col-md-8
+        .card
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0 Informasi Barang BHP Baru
+          .card-body
+            form(action="/consumables/store" method="POST")
+              .row
+                .col-md-6
+                  .form-group
+                    label Kategori BHP *
+                    select.form-control.input-gray(name="category_id" required)
+                      option(value="") -- Pilih Kategori --
+                      each cat in categories
+                        option(value=cat.id)= cat.category_name
+                .col-md-6
+                  .form-group
+                    label Kode BHP
+                    input.form-control.input-gray(
+                      type="text" 
+                      name="consumable_code" 
+                      placeholder="Contoh: BHP-ALK-70 (Opsional)"
+                    )
+
+              .row.mt-2
+                .col-md-6
+                  .form-group
+                    label Nama Bahan BHP *
+                    input.form-control.input-gray(
+                      type="text" 
+                      name="consumable_name" 
+                      required 
+                      placeholder="Contoh: Alkohol 70%"
+                    )
+                .col-md-6
+                  .form-group
+                    label Satuan Takaran *
+                    input.form-control.input-gray(
+                      type="text" 
+                      name="unit" 
+                      required 
+                      placeholder="Contoh: Botol, Box, Roll, Pcs"
+                    )
+
+              .row.mt-2
+                .col-md-6
+                  .form-group
+                    label Jumlah Awal (Stok)
+                    input.form-control.input-gray(
+                      type="number" 
+                      name="stock" 
+                      min="0" 
+                      value="0" 
+                      placeholder="Stok awal tersedia"
+                    )
+                .col-md-6
+                  .form-group
+                    label Batas Stok Minimum (Alarm Reorder)
+                    input.form-control.input-gray(
+                      type="number" 
+                      name="minimum_stock" 
+                      min="0" 
+                      value="0" 
+                      placeholder="Batas minimum stok aman"
+                    )
+
+              .row.mt-2
+                .col-md-6
+                  .form-group
+                    label Estimasi Harga Satuan (Rp)
+                    input.form-control.input-gray(
+                      type="number" 
+                      name="latest_price" 
+                      step="0.01" 
+                      placeholder="Contoh: 35000"
+                    )
+                .col-md-6
+                  .form-group
+                    label Lokasi Penyimpanan
+                    input.form-control.input-gray(
+                      type="text" 
+                      name="storage_location" 
+                      placeholder="Contoh: Lemari Bahan Kimia A"
+                    )
+
+              .mt-4.d-flex.justify-content-between
+                a.btn.btn-secondary(href="/consumables") Batal
+                button.btn.btn-success(type="submit")
+                  i.fas.fa-save.mr-1
+                  | Simpan Katalog BHP

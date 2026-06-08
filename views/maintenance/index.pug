@@ -1,0 +1,60 @@
+extends ../layouts/main
+
+block content
+  .container-fluid
+    .row.mb-4.align-items-center
+      .col-md-8
+        h1.m-0.text-white Perawatan Inventaris (Maintenance Log)
+        p.text-muted Catat kegiatan perawatan berkala, perbaikan inventaris rusak, dan penggunaan bahan habis pakai.
+      .col-md-4.text-md-right
+        a.btn.btn-primary(href="/maintenance/create")
+          i.fas.fa-plus-circle.mr-1
+          | Catat Perawatan Baru
+
+    .row
+      .col-12
+        .card
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0
+              i.fas.fa-tools.mr-2
+              | Riwayat Log Perawatan (Maintenance Logs)
+          .card-body
+            .table-responsive
+              table.table.table-hover.text-white(style="background: transparent;")
+                thead
+                  tr.text-muted
+                    th Tanggal
+                    th Nama Barang
+                    th Kode Label
+                    th Jenis Perawatan
+                    th Kondisi Awal
+                    th Kondisi Akhir
+                    th Petugas
+                    th Catatan Deskripsi
+                    th Bahan Digunakan (BHP)
+                tbody
+                  if logs.length === 0
+                    tr
+                      td.text-center(colspan="9") Belum ada riwayat log perawatan tercatat.
+                  else
+                    each log in logs
+                      tr
+                        td= log.maintenance_date
+                        td.font-weight-bold= log.inventory_name
+                        td= log.inventory_code
+                        td
+                          if log.maintenance_type === 'PENCEGAHAN'
+                            span.badge.badge-info Pencegahan (Preventive)
+                          else
+                            span.badge.badge-warning Perbaikan (Corrective)
+                        td
+                          span.badge.badge-secondary= log.condition_before
+                        td
+                          span.badge.badge-success= log.condition_after
+                        td= log.staff_name
+                        td= log.maintenance_description || '-'
+                        td
+                          if log.materials_used
+                            span.text-warning.font-weight-bold= log.materials_used
+                          else
+                            span.text-muted -

@@ -1,0 +1,44 @@
+extends ../layouts/main
+
+block content
+  .container-fluid
+    .row.mb-4
+      .col-12
+        h1.m-0.text-white Penerimaan Barang &amp; Inventaris
+        p.text-muted Detail draft pengadaan yang telah disetujui Kaprodi dan siap diterima.
+
+    .row
+      .col-12
+        .card
+          .card-header.d-flex.align-items-center
+            h3.card-title.text-white.m-0
+              i.fas.fa-boxes.mr-2
+              | Daftar Draft Pengadaan Disetujui
+          .card-body
+            .table-responsive
+              table.table.table-hover.text-white(style="background: transparent;")
+                thead
+                  tr.text-muted
+                    th(width="80") ID
+                    th Judul Draft
+                    th Tahun
+                    th Diajukan Oleh
+                    th Status
+                    th(width="180") Aksi
+                tbody
+                  if drafts.length === 0
+                    tr
+                      td.text-center(colspan="6") Belum ada draft yang disetujui.
+                  else
+                    each draft in drafts
+                      tr
+                        td= draft.id
+                        td.font-weight-bold= draft.draft_title
+                        td= draft.procurement_year
+                        td= draft.creator_name
+                        td
+                          span.badge.badge-success TERSETUJUI
+                        td
+                          a.btn.btn-info.btn-sm(href=`/goods-receipt/${draft.id}`)
+                            i.fas.fa-eye.mr-1
+                            | Proses Penerimaan

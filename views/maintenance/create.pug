@@ -1,0 +1,122 @@
+extends ../layouts/main
+
+block content
+  .container-fluid
+    .row.mb-4.align-items-center
+      .col-md-8
+        h1.m-0.text-white Catat Perawatan Baru
+        p.text-muted Catat aktivitas perawatan/perbaikan aset dan kurangi stok BHP yang digunakan secara otomatis.
+      .col-md-4.text-md-right
+        a.btn.btn-secondary(href="/maintenance")
+          i.fas.fa-arrow-left.mr-1
+          | Kembali
+
+    .row
+      .col-md-12
+        form(action="/maintenance/store" method="POST")
+          .row
+            // LEFT COLUMN - MAINTENANCE INFO
+            .col-md-7
+              .card.h-100
+                .card-header.bg-navy
+                  h5.card-title.text-white.m-0 Detail Kegiatan Perawatan
+                .card-body
+                  .row
+                    .col-md-12
+                      .form-group
+                        label Inventaris yang Dirawat *
+                        select.form-control.input-gray(name="inventory_id" required)
+                          option(value="") -- Pilih Barang Inventaris --
+                          each inv in inventories
+                            option(value=inv.id)= `${inv.inventory_name} (${inv.inventory_code})`
+                  
+                  .row.mt-2
+                    .col-md-6
+                      .form-group
+                        label Tanggal Perawatan *
+                        input.form-control.input-gray(
+                          type="date" 
+                          name="maintenance_date" 
+                          required 
+                          value=new Date().toISOString().split('T')[0]
+                        )
+                    .col-md-6
+                      .form-group
+                        label Jenis Perawatan *
+                        select.form-control.input-gray(name="maintenance_type" required)
+                          option(value="PENCEGAHAN") Pencegahan (Preventive)
+                          option(value="PERBAIKAN") Perbaikan (Corrective)
+
+                  .row.mt-2
+                    .col-md-6
+                      .form-group
+                        label Kondisi Sebelum Perawatan *
+                        select.form-control.input-gray(name="condition_before" required)
+                          option(value="BAIK") Baik
+                          option(value="RUSAK_RINGAN") Rusak Ringan
+                          option(value="RUSAK_BERAT") Rusak Berat
+                    .col-md-6
+                      .form-group
+                        label Kondisi Setelah Perawatan *
+                        select.form-control.input-gray(name="condition_after" required)
+                          option(value="BAIK") Baik
+                          option(value="RUSAK_RINGAN") Rusak Ringan
+                          option(value="RUSAK_BERAT") Rusak Berat
+
+                  .row.mt-2
+                    .col-md-12
+                      .form-group
+                        label Deskripsi Aktivitas Perawatan / Perbaikan
+                        textarea.form-control.input-gray(
+                          name="maintenance_description" 
+                          rows="4" 
+                          placeholder="Jelaskan detail tindakan perawatan atau perbaikan yang dilakukan..."
+                        )
+
+            // RIGHT COLUMN - BHP MATERIAL USAGE
+            .col-md-5
+              .card.h-100
+                .card-header.bg-navy
+                  h5.card-title.text-white.m-0 Bahan Habis Pakai (BHP) yang Digunakan
+                .card-body
+                  p.text-muted Masukkan jumlah BHP yang habis terpakai selama proses pemeliharaan. Stok akan langsung berkurang otomatis.
+                  
+                  .table-responsive(style="max-height: 350px; overflow-y: auto;")
+                    table.table.table-striped.text-white(style="background: transparent;")
+                      thead
+                        tr.text-muted
+                          th Bahan
+                          th Sisa Stok
+                          th(width="110") Digunakan
+                      tbody
+                        if consumables.length === 0
+                          tr
+                            td.text-center(colspan="3") Tidak ada data BHP aktif.
+                        else
+                          each item in consumables
+                            tr
+                              td
+                                div.font-weight-bold= item.consumable_name
+                                small.text-muted= item.consumable_code || '-'
+                              td
+                                span.badge(class=item.stock <= item.minimum_stock ? 'badge-danger' : 'badge-success')
+                                  = `${item.stock} ${item.unit}`
+                              td
+                                if item.stock > 0
+                                  input.form-control.input-gray(
+                                    type="number" 
+                                    name=`consumables[id_${item.id}]` 
+                                    min="0" 
+                                    max=item.stock 
+                                    value="0"
+                                    required
+                                  )
+                                else
+                                  span.text-danger.small Habis
+
+          .row.mt-4.mb-5
+            .col-12.text-right
+              a.btn.btn-secondary.mr-3(href="/maintenance") Batal
+              button.btn.btn-success.btn-lg(type="submit")
+                i.fas.fa-save.mr-1
+                | Simpan Log Perawatan

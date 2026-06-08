@@ -1,0 +1,146 @@
+extends ../layouts/main
+
+block content
+  .container-fluid
+    .row.mb-4.align-items-center
+      .col-md-8
+        h1.m-0.text-white Update Data Inventaris Fisik
+        p.text-muted Lakukan labelisasi dan upload foto QR/barcode serta penempatan ruangan.
+      .col-md-4.text-md-right
+        a.btn.btn-secondary(href=`/goods-receipt/${draftId}`)
+          i.fas.fa-arrow-left.mr-1
+          | Kembali ke Penerimaan
+
+    .row
+      .col-md-8
+        .card
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0 Informasi Barang &amp; Label
+          .card-body
+            form(
+              action=`/goods-receipt/inventory/${inventory.id}/update` 
+              method="POST" 
+              enctype="multipart/form-data"
+            )
+              .row
+                .col-md-6
+                  .form-group
+                    label Nama Inventaris
+                    input.form-control.input-gray(
+                      type="text" 
+                      value=inventory.inventory_name 
+                      disabled
+                    )
+                .col-md-6
+                  .form-group
+                    label Nomor Label Fisik (Penomoran Label) *
+                    input.form-control.input-gray(
+                      type="text" 
+                      name="inventory_code" 
+                      value=(inventory.inventory_code.startsWith('INV-TEMP-') ? '' : inventory.inventory_code)
+                      placeholder="Masukkan kode label unik (contoh: LAB-KOMP-01)"
+                      required
+                    )
+
+              .row.mt-2
+                .col-md-6
+                  .form-group
+                    label Kategori Inventaris *
+                    select.form-control.input-gray(name="category_id" required)
+                      each cat in categories
+                        option(value=cat.id selected=(cat.id === inventory.category_id))= cat.category_name
+                .col-md-6
+                  .form-group
+                    label Ruangan Penempatan
+                    select.form-control.input-gray(name="room_id")
+                      option(value="") -- Pilih Ruangan --
+                      each rm in rooms
+                        option(value=rm.id selected=(rm.id === inventory.room_id))= rm.room_name
+
+              .row.mt-2
+                .col-md-6
+                  .form-group
+                    label Merk/Brand
+                    input.form-control.input-gray(
+                      type="text" 
+                      name="brand" 
+                      value=inventory.brand 
+                      placeholder="Contoh: ASUS, Logitech"
+                    )
+                .col-md-6
+                  .form-group
+                    label Status Kondisi
+                    select.form-control.input-gray(name="condition_status")
+                      option(value="BAIK" selected=(inventory.condition_status === 'BAIK')) Baik
+                      option(value="RUSAK_RINGAN" selected=(inventory.condition_status === 'RUSAK_RINGAN')) Rusak Ringan
+                      option(value="RUSAK_BERAT" selected=(inventory.condition_status === 'RUSAK_BERAT')) Rusak Berat
+                      option(value="DALAM_PERBAIKAN" selected=(inventory.condition_status === 'DALAM_PERBAIKAN')) Dalam Perbaikan
+                      option(value="DIHAPUS" selected=(inventory.condition_status === 'DIHAPUS')) Dihapus
+
+              .row.mt-2
+                .col-md-6
+                  .form-group
+                    label Status Inventaris
+                    select.form-control.input-gray(name="inventory_status")
+                      option(value="AKTIF" selected=(inventory.inventory_status === 'AKTIF')) Aktif
+                      option(value="TIDAK_AKTIF" selected=(inventory.inventory_status === 'TIDAK_AKTIF')) Tidak Aktif
+                      option(value="DIGANTI" selected=(inventory.inventory_status === 'DIGANTI')) Diganti
+                .col-md-6
+                  .form-group
+                    label Unggah Foto QR / Barcode Fisik
+                    input.form-control-file.text-white(
+                      type="file" 
+                      name="image" 
+                      accept="image/*"
+                    )
+                    small.text-muted Format gambar (.jpg, .png, .webp).
+
+              .row.mt-2
+                .col-md-12
+                  .form-group
+                    label Spesifikasi Teknis
+                    textarea.form-control.input-gray(
+                      name="specification" 
+                      rows="3" 
+                      placeholder="Detail spesifikasi barang..."
+                    )= inventory.specification
+                .col-md-12
+                  .form-group
+                    label Catatan Lainnya
+                    textarea.form-control.input-gray(
+                      name="notes" 
+                      rows="2" 
+                      placeholder="Catatan tambahan..."
+                    )= inventory.notes
+
+              .mt-4.d-flex.justify-content-between
+                a.btn.btn-secondary(href=`/goods-receipt/${draftId}`) Batal
+                button.btn.btn-success(type="submit")
+                  i.fas.fa-save.mr-1
+                  | Simpan Data Inventaris
+
+      .col-md-4
+        // PREVIEW AND QR
+        .card.mb-4
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0 QR Code Generated
+          .card-body.text-center
+            p.text-muted QR Code ini digenerate berdasarkan kode label di samping.
+            if inventory.qr_code_path
+              img.img-thumbnail.p-3(
+                src=inventory.qr_code_path 
+                style="background: white; max-width: 200px; width: 100%;"
+              )
+              p.mt-2.text-success.font-weight-bold= inventory.inventory_code
+            else
+              p.text-danger QR Code belum tersedia
+
+        if inventory.image_path
+          .card
+            .card-header.bg-navy
+              h5.card-title.text-white.m-0 Foto QR/Barcode Fisik
+            .card-body.text-center
+              img.img-thumbnail(
+                src=inventory.image_path 
+                style="max-width: 100%; max-height: 250px; object-fit: contain;"
+              )

@@ -62,3 +62,19 @@ aside.main-sidebar.sidebar-dark-primary.elevation-4.z-ind-1
                     li.nav-item
                         a.nav-link(href="/review-procurement")
                             p Review Pengadaan
+
+                if user && (user.role_name === 'STAFF_ADMIN' || user.role_name === 'ADMIN')
+
+                    li.nav-item
+                        a.nav-link(href="/goods-receipt")
+                            p Penerimaan & Inventaris
+
+                if user && (user.role_name === 'STAFF_LAB' || user.role_name === 'ADMIN')
+
+                    li.nav-item
+                        a.nav-link(href="/consumables")
+                            p Kelola BHP
+
+                    li.nav-item
+                        a.nav-link(href="/maintenance")
+                            p Log Perawatan

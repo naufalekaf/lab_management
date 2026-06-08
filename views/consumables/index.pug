@@ -1,0 +1,99 @@
+extends ../layouts/main
+
+block content
+  .container-fluid
+    .row.mb-4.align-items-center
+      .col-md-8
+        h1.m-0.text-white Kelola Bahan Habis Pakai (BHP)
+        p.text-muted Pantau persediaan, batas aman, dan kelola penyesuaian stok bahan laboratorium.
+      .col-md-4.text-md-right
+        a.btn.btn-primary(href="/consumables/create")
+          i.fas.fa-plus-circle.mr-1
+          | Tambah Katalog BHP
+
+    .row
+      .col-12
+        .card
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0
+              i.fas.fa-flask.mr-2
+              | Daftar Persediaan BHP
+          .card-body
+            .table-responsive
+              table.table.table-hover.text-white(style="background: transparent;")
+                thead
+                  tr.text-muted
+                    th Kode BHP
+                    th Nama Bahan
+                    th Kategori
+                    th Stok Saat Ini
+                    th Batas Minimum
+                    th Satuan
+                    th Harga Terakhir
+                    th Lokasi Penyimpanan
+                    th Status
+                    th(width="150") Aksi
+                tbody
+                  if consumables.length === 0
+                    tr
+                      td.text-center(colspan="10") Belum ada data BHP terdaftar.
+                  else
+                    each item in consumables
+                      - const isLow = item.stock <= item.minimum_stock
+                      tr
+                        td.font-weight-bold= item.consumable_code || '-'
+                        td= item.consumable_name
+                        td= item.category_name || '-'
+                        td
+                          span.font-weight-bold(class=isLow ? 'text-danger' : 'text-success')= item.stock
+                        td= item.minimum_stock
+                        td= item.unit
+                        td= 'Rp ' + parseFloat(item.latest_price).toLocaleString('id-ID')
+                        td= item.storage_location || '-'
+                        td
+                          if isLow
+                            span.badge.badge-danger Stok Rendah
+                          else
+                            span.badge.badge-success Aman
+                        td
+                          button.btn.btn-warning.btn-sm(
+                            type="button" 
+                            data-toggle="modal" 
+                            data-target=`#adjustModal-${item.id}`
+                          )
+                            i.fas.fa-sliders-h.mr-1
+                            | Sesuaikan Stok
+
+    // Modals for Stock Adjustments (outside table to prevent backdrop context bug)
+    each item in consumables
+      .modal.fade(id=`adjustModal-${item.id}` tabindex="-1" role="dialog" aria-labelledby=`adjustModalLabel-${item.id}` aria-hidden="true")
+        .modal-dialog(role="document")
+          .modal-content(style="background: #111827; color: #fff; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.6);")
+            .modal-header(style="border-bottom: 1px solid rgba(255,255,255,0.1);")
+              h5.modal-title.text-white(id=`adjustModalLabel-${item.id}`)
+                i.fas.fa-sliders-h.mr-2.text-warning
+                | Penyesuaian Stok: #{item.consumable_name}
+              button.close.text-white(type="button" data-dismiss="modal" aria-label="Close")
+                span(aria-hidden="true") &times;
+            form(action=`/consumables/${item.id}/adjust-stock` method="POST")
+              .modal-body.text-left
+                .form-group
+                  label.text-muted Nama BHP
+                  input.form-control.input-gray(type="text" value=item.consumable_name disabled)
+                .form-group.mt-3
+                  label.text-muted Stok Saat Ini
+                  input.form-control.input-gray(type="text" value=`${item.stock} ${item.unit}` disabled)
+                .form-group.mt-3
+                  label.text-muted Jenis Penyesuaian *
+                  select.form-control.input-gray(name="movement_type" required)
+                    option(value="MASUK") Masuk (Tambah Stok)
+                    option(value="KELUAR") Keluar (Kurangi Stok)
+                .form-group.mt-3
+                  label.text-muted Jumlah Penyesuaian *
+                  input.form-control.input-gray(type="number" name="quantity" min="1" required placeholder="Contoh: 5")
+                .form-group.mt-3
+                  label.text-muted Keterangan / Alasan
+                  textarea.form-control.input-gray(name="notes" rows="2" placeholder="Contoh: Pembelian rutin, Expired, dll.")
+              .modal-footer(style="border-top: 1px solid rgba(255,255,255,0.1);")
+                button.btn.btn-secondary(type="button" data-dismiss="modal") Batal
+                button.btn.btn-success(type="submit") Simpan Penyesuaian

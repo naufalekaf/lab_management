@@ -1,0 +1,351 @@
+extends ../layouts/main
+
+block content
+  .container-fluid
+    .row.mb-4.align-items-center
+      .col-md-8
+        h1.m-0.text-white Detail Penerimaan &amp; Inventaris
+        p.text-muted Kelola penerimaan barang parsial dan update data inventaris fisik.
+      .col-md-4.text-md-right
+        a.btn.btn-secondary(href="/goods-receipt")
+          i.fas.fa-arrow-left.mr-1
+          | Kembali
+
+    // DRAFT INFO
+    .row
+      .col-12
+        .card.mb-4
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0 Informasi Draft Pengadaan
+          .card-body
+            .row
+              .col-md-4
+                strong Judul Draft:
+                p.text-white.font-weight-bold= draft.draft_title
+              .col-md-4
+                strong Tahun Pengadaan:
+                p.text-white= draft.procurement_year
+              .col-md-4
+                strong Catatan:
+                p.text-white= draft.notes || '-'
+
+    // APPROVED ITEMS
+    .row
+      .col-12
+        .card.mb-4
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0
+              i.fas.fa-clipboard-list.mr-2
+              | Item yang Disetujui (Siap Diterima)
+          .card-body
+            .table-responsive
+              table.table.table-striped.text-white(style="background: transparent;")
+                thead
+                  tr.text-muted
+                    th No
+                    th Nama Barang
+                    th Jenis
+                    th Dipesan
+                    th Diterima
+                    th Sisa
+                    th Status
+                    th(width="200") Aksi
+                tbody
+                  each item, index in items
+                    - const remaining = item.quantity - item.received_qty
+                    tr
+                      td= index + 1
+                      td.font-weight-bold= item.item_name
+                      td= item.item_type
+                      td= item.quantity
+                      td= item.received_qty
+                      td= remaining
+                      td
+                        if remaining === 0
+                          span.badge.badge-success Selesai
+                        else if item.received_qty > 0
+                          span.badge.badge-warning Sebagian
+                        else
+                          span.badge.badge-danger Belum Datang
+                      td
+                        if remaining > 0
+                          button.btn.btn-sm.btn-success(
+                            type="button"
+                            data-toggle="collapse"
+                            data-target=`#receiveForm-${item.id}`
+                            aria-expanded="false"
+                          )
+                            i.fas.fa-truck.mr-1
+                            | Terima Barang
+                        else
+                          span.text-muted -
+                    
+                    if remaining > 0
+                      tr.collapse(id=`receiveForm-${item.id}`)
+                        td(colspan="8" style="background: rgba(0,0,0,0.25); border-radius: 8px;")
+                          .p-3
+                            h6.text-success.font-weight-bold.mb-3 Input Penerimaan Barang: #{item.item_name}
+                            form(action=`/goods-receipt/item/${item.id}/receive` method="POST")
+                              .row
+                                .col-md-3
+                                  .form-group
+                                    label Jumlah Diterima
+                                    input.form-control.input-gray(
+                                      type="number"
+                                      name="received_quantity"
+                                      min="1"
+                                      max=remaining
+                                      required
+                                      placeholder=`Maks ${remaining}`
+                                    )
+                                .col-md-3
+                                  .form-group
+                                    label Tanggal Terima
+                                    input.form-control.input-gray(
+                                      type="date"
+                                      name="received_date"
+                                      required
+                                      value=new Date().toISOString().split('T')[0]
+                                    )
+                                .col-md-4
+                                  .form-group
+                                    label Catatan
+                                    input.form-control.input-gray(
+                                      type="text"
+                                      name="receipt_notes"
+                                      placeholder="Contoh: Kondisi baik, batch 1"
+                                    )
+                                .col-md-2.d-flex.align-items-end
+                                  .form-group.w-100
+                                    button.btn.btn-success.btn-block(type="submit")
+                                      i.fas.fa-check-circle.mr-1
+                                      | Simpan
+
+    // INVENTORY ITEMS UPDATES
+    if inventories.length > 0
+      .row
+        .col-12
+          .card.mb-4
+            .card-header.bg-navy.d-flex.justify-content-between.align-items-center
+              h5.card-title.text-white.m-0
+                i.fas.fa-qrcode.mr-2
+                | Labelisasi &amp; Foto QR/Barcode Inventaris
+            .card-body
+              p.text-muted Klik "Update" untuk mengalokasikan nomor label fisik, kategori, ruangan, dan mengunggah foto QR/barcode barang.
+              .table-responsive
+                table.table.table-hover.text-white(style="background: transparent;")
+                  thead
+                    tr.text-muted
+                      th Nama Inventaris
+                      th Kode Label
+                      th Kategori
+                      th Ruangan
+                      th Tanggal Masuk
+                      th.text-center QR Code
+                      th.text-center Foto Fisik
+                      th(width="120") Aksi
+                  tbody
+                    each inv in inventories
+                      - const isTemp = inv.inventory_code.startsWith('INV-TEMP-')
+                      tr
+                        td.font-weight-bold= inv.inventory_name
+                        td
+                          if isTemp
+                            span.text-warning.font-italic Temporary Code
+                          else
+                            span.text-success.font-weight-bold= inv.inventory_code
+                        td= inv.category_name || '-'
+                        td= inv.room_name || '-'
+                        td= inv.received_date
+                        td.text-center
+                          if inv.qr_code_path
+                            img(
+                              src=inv.qr_code_path 
+                              width="50" 
+                              height="50" 
+                              style="background: white; border-radius: 4px; padding: 2px;"
+                            )
+                          else
+                            span -
+                        td.text-center
+                          if inv.image_path
+                            img(
+                              src=inv.image_path 
+                              width="50" 
+                              height="50" 
+                              style="object-fit: cover; border-radius: 4px;"
+                            )
+                          else
+                            span.badge.badge-secondary Belum Ada Foto
+                        td
+                          button.btn.btn-warning.btn-sm(
+                            type="button" 
+                            data-toggle="modal" 
+                            data-target=`#updateModal-${inv.id}`
+                          )
+                            i.fas.fa-edit.mr-1
+                            | Update
+
+    // HISTORY OF RECEIPTS
+    .row
+      .col-12
+        .card
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0
+              i.fas.fa-history.mr-2
+              | Riwayat Penerimaan Barang (Goods Receipt Log)
+          .card-body
+            .table-responsive
+              table.table.table-striped.text-white(style="background: transparent;")
+                thead
+                  tr.text-muted
+                    th Tanggal
+                    th Nama Barang
+                    th Jumlah Diterima
+                    th Diterima Oleh
+                    th Catatan
+                tbody
+                  if receipts.length === 0
+                    tr
+                      td.text-center(colspan="5") Belum ada riwayat penerimaan untuk draft ini.
+                  else
+                    each rec in receipts
+                      tr
+                        td= rec.received_date
+                        td.font-weight-bold= rec.item_name
+                        td= rec.received_quantity
+                        td= rec.receiver_name
+                        td= rec.receipt_notes || '-'
+
+    // Modals for Updating Inventory inline (placed outside cards/tables to avoid z-index/backdrop stacking context bugs)
+    each inv in inventories
+      .modal.fade(id=`updateModal-${inv.id}` tabindex="-1" role="dialog" aria-labelledby=`updateModalLabel-${inv.id}` aria-hidden="true")
+        .modal-dialog.modal-lg(role="document")
+          .modal-content(style="background: #111827; color: #fff; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.6);")
+            .modal-header(style="border-bottom: 1px solid rgba(255,255,255,0.1);")
+              h5.modal-title.text-white(id=`updateModalLabel-${inv.id}`)
+                i.fas.fa-edit.mr-2.text-warning
+                | Update Inventaris: #{inv.inventory_name}
+              button.close.text-white(type="button" data-dismiss="modal" aria-label="Close")
+                span(aria-hidden="true") &times;
+            form(
+              action=`/goods-receipt/inventory/${inv.id}/update` 
+              method="POST" 
+              enctype="multipart/form-data"
+            )
+              .modal-body.text-left
+                .row
+                  .col-md-6
+                    .form-group
+                      label.text-muted Nama Inventaris
+                      input.form-control.input-gray(
+                        type="text" 
+                        value=inv.inventory_name 
+                        disabled
+                      )
+                  .col-md-6
+                    .form-group
+                      label.text-muted Nomor Label Fisik *
+                      input.form-control.input-gray(
+                        type="text" 
+                        name="inventory_code" 
+                        value=(inv.inventory_code.startsWith('INV-TEMP-') ? '' : inv.inventory_code)
+                        placeholder="Contoh: LAB-KOMP-01"
+                        required
+                      )
+
+                .row.mt-2
+                  .col-md-6
+                    .form-group
+                      label.text-muted Kategori Inventaris *
+                      select.form-control.input-gray(name="category_id" required)
+                        each cat in categories
+                          option(value=cat.id selected=(cat.id === inv.category_id))= cat.category_name
+                  .col-md-6
+                    .form-group
+                      label.text-muted Ruangan Penempatan
+                      select.form-control.input-gray(name="room_id")
+                        option(value="") -- Pilih Ruangan --
+                        each rm in rooms
+                          option(value=rm.id selected=(rm.id === inv.room_id))= rm.room_name
+
+                .row.mt-2
+                  .col-md-6
+                    .form-group
+                      label.text-muted Merk/Brand
+                      input.form-control.input-gray(
+                        type="text" 
+                        name="brand" 
+                        value=inv.brand 
+                        placeholder="Contoh: ASUS, Logitech"
+                      )
+                  .col-md-6
+                    .form-group
+                      label.text-muted Status Kondisi
+                      select.form-control.input-gray(name="condition_status")
+                        option(value="BAIK" selected=(inv.condition_status === 'BAIK')) Baik
+                        option(value="RUSAK_RINGAN" selected=(inv.condition_status === 'RUSAK_RINGAN')) Rusak Ringan
+                        option(value="RUSAK_BERAT" selected=(inv.condition_status === 'RUSAK_BERAT')) Rusak Berat
+                        option(value="DALAM_PERBAIKAN" selected=(inv.condition_status === 'DALAM_PERBAIKAN')) Dalam Perbaikan
+                        option(value="DIHAPUS" selected=(inv.condition_status === 'DIHAPUS')) Dihapus
+
+                .row.mt-2
+                  .col-md-6
+                    .form-group
+                      label.text-muted Status Inventaris
+                      select.form-control.input-gray(name="inventory_status")
+                        option(value="AKTIF" selected=(inv.inventory_status === 'AKTIF')) Aktif
+                        option(value="TIDAK_AKTIF" selected=(inv.inventory_status === 'TIDAK_AKTIF')) Tidak Aktif
+                        option(value="DIGANTI" selected=(inv.inventory_status === 'DIGANTI')) Diganti
+                  .col-md-6
+                    .form-group
+                      label.text-muted Unggah Foto QR / Barcode Fisik
+                      input.form-control-file.text-white(
+                        type="file" 
+                        name="image" 
+                        accept="image/*"
+                      )
+
+                .row.mt-2
+                  .col-md-12
+                    .form-group
+                      label.text-muted Spesifikasi Teknis
+                      textarea.form-control.input-gray(
+                        name="specification" 
+                        rows="2"
+                        placeholder="Spesifikasi hardware/software..."
+                      )= inv.specification
+                  .col-md-12
+                    .form-group
+                      label.text-muted Catatan Tambahan
+                      textarea.form-control.input-gray(
+                        name="notes" 
+                        rows="1"
+                        placeholder="Catatan lainnya..."
+                      )= inv.notes
+
+                .row.mt-3.align-items-center
+                  .col-md-6.text-center
+                    strong.text-muted.d-block QR Code Sistem:
+                    if inv.qr_code_path
+                      img.mt-2(
+                        src=inv.qr_code_path 
+                        width="100" 
+                        height="100" 
+                        style="background: white; border-radius: 8px; padding: 4px;"
+                      )
+                  .col-md-6.text-center
+                    strong.text-muted.d-block Foto Barcode/QR Fisik:
+                    if inv.image_path
+                      img.mt-2(
+                        src=inv.image_path 
+                        width="100" 
+                        height="100" 
+                        style="object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);"
+                      )
+                    else
+                      span.text-muted.d-block.mt-2 Belum ada foto
+
+              .modal-footer(style="border-top: 1px solid rgba(255,255,255,0.1);")
+                button.btn.btn-secondary(type="button" data-dismiss="modal") Batal
+                button.btn.btn-success(type="submit") Simpan Perubahan
