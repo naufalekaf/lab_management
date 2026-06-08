@@ -1,0 +1,231 @@
+extends ../layouts/main
+
+block content
+
+  .container-fluid
+
+    .row
+
+      .col-md-12
+
+        .card
+
+          .card-header
+
+            h3.card-title Detail Draft Pengadaan
+
+          .card-body
+
+            table.table.table-bordered
+
+              tr
+                th Judul Draft
+                td= draft.draft_title
+
+              tr
+                th Tahun
+                td= draft.procurement_year
+
+              tr
+                th Status
+                td= draft.draft_status
+
+              tr
+                th Catatan
+                td= draft.notes || '-'
+
+    if draft.draft_status === 'DRAF' || draft.draft_status === 'DIAJUKAN'
+
+      .row.mt-3
+
+        .col-md-12
+
+          .card
+
+            .card-header
+
+              h3.card-title Tambah Barang
+
+            .card-body
+
+              form(
+                action="/procurementItem/store"
+                method="POST"
+              )
+
+                input(
+                  type="hidden"
+                  name="draft_id"
+                  value=draft.id
+                )
+
+                .form-group
+
+                  label Jenis Barang
+
+                  select.form-control(
+                    name="item_type"
+                    required
+                  )
+
+                    option(value="")
+                      | Pilih Jenis
+
+                    option(value="INVENTARIS")
+                      | Inventaris
+
+                    option(value="BHP")
+                      | BHP
+
+                .form-group.mt-2
+
+                  label Nama Barang
+
+                  input.form-control(
+                    type="text"
+                    name="item_name"
+                    required
+                  )
+
+                .form-group.mt-2
+
+                  label Jumlah
+
+                  input.form-control(
+                    type="number"
+                    name="quantity"
+                    required
+                  )
+
+                .form-group.mt-2
+
+                  label Estimasi Harga
+
+                  input.form-control(
+                    type="number"
+                    name="estimated_price"
+                    required
+                  )
+
+                .form-group.mt-2
+
+                  label Link Pembelian
+
+                  input.form-control(
+                    type="text"
+                    name="purchase_link"
+                  )
+
+                br
+
+                button.btn.btn-success(
+                  type="submit"
+                )
+                  | Simpan Barang
+
+    .row.mt-3
+
+      .col-md-12
+
+        .card
+
+          .card-header.d-flex.justify-content-between
+
+            h3.card-title Daftar Barang
+
+
+          .card-body
+
+            table.table.table-bordered.table-striped
+
+              thead
+
+                tr
+
+                  th No
+
+                  th Jenis
+
+                  th Nama Barang
+
+                  th Jumlah
+
+                  th Harga
+
+                  th Status
+
+                  th(width="150") Aksi
+
+              tbody
+
+                if items.length === 0
+
+                  tr
+
+                    td(
+                      colspan="7"
+                      class="text-center"
+                    )
+                      | Belum ada barang
+
+                else
+
+                    each item, index in items
+
+                      tr
+
+                        td= index + 1
+
+                        td= item.item_type
+
+                        td= item.item_name
+
+                        td= item.quantity
+
+                        td= item.estimated_price
+
+                        td= item.approval_status
+
+                        td
+
+                          if draft.draft_status == 'DRAF' || draft.draft_status === 'DIAJUKAN'
+
+                            a.btn.btn-warning.btn-sm(
+                              href=`/procurement-item/${item.id}/edit`
+                            )
+                              | Edit
+
+                            form(
+                              action=`/procurement-item/${item.id}/delete`
+                              method="POST"
+                              style="display:inline;"
+                            )
+
+                              button.btn.btn-danger.btn-sm.ml-3(
+                                type="submit"
+                                onclick="return confirm('Hapus barang?')"
+                              )
+                                | Hapus
+
+    .row.mt-3
+
+      .col-md-12.d-flex.justify-content-between
+
+        a.btn.btn-secondary(
+          href="/procurement"
+        )
+          | Kembali
+
+
+        if draft.draft_status === 'DRAF'
+
+          form(
+            action=`/procurement/${draft.id}/submit`
+            method="POST"
+          )
+
+            button.btn.btn-primary(
+              type="submit"
+              onclick="return confirm('Submit draft pengadaan? Setelah submit tidak dapat diubah.')"
+            )
+              | Submit Pengadaan

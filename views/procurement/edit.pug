@@ -1,0 +1,45 @@
+extends ../layouts/main
+
+block content
+
+    .container-fluid
+
+        h1 Edit Draft Pengadaan
+
+        form(
+            action=`/procurement/${draft.id}/update`
+            method='POST'
+        )
+
+            .mb-3
+                label.form-label Judul Draft
+                input.form-control(
+                    type='text'
+                    name='draft_title'
+                    required
+                )
+
+            .mb-3
+
+                label.form-label Tahun Pengadaan
+
+                input.form-control(
+                    type='number'
+                    name='procurement_year'
+                    value=draft.procurement_year
+                    required
+                )
+
+            .mb-3
+
+                label.form-label Catatan
+
+                textarea.form-control(
+                    name='notes'
+                    rows='5'
+                )= draft.notes
+
+            button.btn.btn-primary(
+                type='submit'
+            )
+                | Update

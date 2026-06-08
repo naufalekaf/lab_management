@@ -1,0 +1,67 @@
+extends ../layouts/main
+
+block content
+    .card.user-card
+
+        .card-body
+
+            // HEADER AREA (tanpa card-header)
+            .d-flex.justify-content-between.align-items-center.mb-4
+
+                h3.text-white.mb-0.app-name Manajemen Pengguna
+
+                a.btn.btn-primary(
+                    href="/users/create"
+                )
+
+                    | Tambah Pengguna
+
+            // TABLE
+            .table-responsive
+                table.table.table-dark.table-hover.table-borderless
+
+                    thead
+                        tr
+                            th No
+                            th Nama
+                            th Email
+                            th Role
+                            th Status
+                            th.text-center Action
+
+                    tbody
+                        each item, index in users
+                            tr
+                                td= index + 1
+                                td.font-weight-bold= item.full_name
+                                td= item.email
+
+                                td
+                                    span.role-text
+                                        if item.role_id == 1
+                                            | Admin
+                                        else if item.role_id == 2
+                                            | Kepala Lab
+                                        else if item.role_id == 3
+                                            | Kaprodi
+                                        else if item.role_id == 4
+                                            | Staff Admin
+                                        else
+                                            | Staff Lab
+
+                                td
+                                    if item.is_active == 1
+                                        span.badge.badge-success Aktif
+                                    else
+                                        span.badge.badge-secondary Nonaktif
+
+                                td.text-center
+                                    a.btn.btn-sm.btn-warning.mr-2(
+                                        href=`/users/edit/${item.id}`
+                                    )
+                                        i.fas.fa-edit
+
+                                    a.btn.btn-sm.btn-danger(
+                                        href=`/users/delete/${item.id}`
+                                    )
+                                        i.fas.fa-trash

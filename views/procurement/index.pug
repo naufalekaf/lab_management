@@ -1,0 +1,56 @@
+extends ../layouts/main
+
+block content
+
+    .container-fluid
+
+        h1.mb-3 Draft Pengadaan
+
+        a.btn.btn-primary.mb-3(
+            href='/procurement/create'
+        )
+            | Tambah Draft
+
+        table.table.table-bordered
+
+            thead
+
+                tr
+                    th ID
+                    th Judul Draft
+                    th Tahun
+                    th Status
+                    th Aksi
+
+            tbody
+
+                each draft in drafts
+
+                    tr
+
+                        td= draft.id
+                        td= draft.draft_title
+                        td= draft.procurement_year
+                        td= draft.draft_status
+                        td
+
+                            a.btn.btn-info.btn-sm.me-1(
+                                href=`/procurement/${draft.id}`
+                            )
+                                | Detail
+
+                            a.btn.btn-warning.btn-sm.me-1.ml-3(
+                                href=`/procurement/${draft.id}/edit`
+                            )
+                                | Edit
+
+                            form(
+                                action=`/procurement/${draft.id}/delete`
+                                method='POST'
+                                style='display:inline;'
+                            )
+
+                                button.btn.btn-danger.btn-sm.ml-3(
+                                    type='submit'
+                                )
+                                    | Hapus

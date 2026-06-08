@@ -1,0 +1,54 @@
+extends ../layouts/main
+
+block content
+    .card.user-card
+
+        .card-body
+
+            h3.text-white.mb-1 Tambah Ruangan
+            p.text-muted.mb-4 Tambahkan data ruangan baru ke dalam sistem.
+
+            form(action="/rooms/store" method="POST")
+
+                .form-group
+                    label.text-light Kode Ruangan
+
+                    input.form-control.input-gray(
+                        type="text"
+                        name="room_code"
+                        placeholder="Contoh: LAB-001"
+                        required
+                    )
+
+                .form-group
+                    label.text-light Nama Ruangan
+
+                    input.form-control.input-gray(
+                        type="text"
+                        name="room_name"
+                        placeholder="Masukkan nama ruangan"
+                        required
+                    )
+
+                .form-group
+                    label.text-light Deskripsi / Lokasi Ruangan
+
+                    textarea.form-control.input-gray(
+                        name="room_description"
+                        rows="4"
+                        placeholder="Masukkan deskripsi atau lokasi ruangan"
+                        required
+                    )
+
+                .d-flex.justify-content-end.mt-4
+
+                    a.btn.btn-secondary.mr-2(
+                        href="/rooms"
+                    )
+
+                        | Batal
+
+                    button.btn.btn-primary(
+                        type="submit"
+                    )
+                        | Simpan

@@ -1,0 +1,72 @@
+extends ../layouts/main
+
+block content
+    .card.user-card
+
+        .card-body
+
+            h3.text-white.mb-1 Edit Pengguna
+            p.text-muted.mb-4 Perbarui informasi pengguna yang terdaftar dalam sistem.
+
+            form(action=`/users/update/${userData.id}` method="POST")
+
+                .form-group
+                    label.text-light Nama Lengkap
+
+                    input.form-control.input-gray(
+                        type="text"
+                        name="full_name"
+                        value=userData.full_name
+                        placeholder="Masukkan nama lengkap"
+                        required
+                    )
+
+                .form-group
+                    label.text-light Email
+
+                    input.form-control.input-gray(
+                        type="email"
+                        name="email"
+                        value=userData.email
+                        placeholder="Masukkan alamat email"
+                        required
+                    )
+
+                .form-group
+                    label.text-light Peran Pengguna
+
+                    select.form-control.input-gray(name="role_id")
+
+                        each role in roles
+                            option(
+                                value=role.id
+                                selected=userData.role_id === role.id
+                            )
+                                = role.role_name
+
+                .form-group
+                    label.text-light Status Akun
+
+                    select.form-control.input-gray(name="is_active")
+
+                        option(
+                            value="1"
+                            selected=userData.is_active == 1
+                        ) Aktif
+
+                        option(
+                            value="0"
+                            selected=userData.is_active == 0
+                        ) Nonaktif
+
+                .d-flex.justify-content-end.mt-4
+
+                    a.btn.btn-secondary.mr-2(
+                        href="/users"
+                    )
+                        | Batal
+
+                    button.btn.btn-primary(
+                        type="submit"
+                    )
+                        | Simpan Perubahan

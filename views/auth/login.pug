@@ -1,0 +1,192 @@
+doctype html
+html
+    head
+        title Login
+
+        link(
+            rel="stylesheet",
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        )
+
+        link(
+            rel="stylesheet",
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        )
+
+        link(
+            rel="stylesheet",
+            href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"
+        )
+
+        style.
+            body.login-page {
+                background: linear-gradient(135deg, #0f172a, #1e293b);
+            }
+
+            .login-box {
+                width: 420px;
+            }
+
+            /* FIX: Card jadi transparan (hilangkan putih AdminLTE) */
+            .card {
+                border-radius: 16px;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+                border: none;
+                background: rgba(255,255,255,0.08);
+                backdrop-filter: blur(10px);
+            }
+
+            .login-card-body {
+                background: transparent !important;
+                color: #fff;
+            }
+
+            .card-body {
+                padding: 2rem;
+            }
+
+            .login-title {
+                text-align: center;
+                color: #ffffff;
+                font-size: 28px;
+                font-weight: 600;
+                margin-bottom: 6px;
+            }
+
+            .login-subtitle {
+                text-align: center;
+                color: #94a3b8;
+                margin-bottom: 25px;
+                font-size: 14px;
+            }
+
+            .form-control {
+                border-radius: 10px;
+                height: 45px;
+            }
+
+            .btn-primary {
+                border-radius: 10px;
+                height: 45px;
+                font-weight: 600;
+            }
+
+            .input-group-text {
+                border-radius: 0 10px 10px 0;
+            }
+
+            .input-group .form-control {
+                border-radius: 10px 0 0 10px;
+            }
+
+            .bdr-radius{
+                border-radius: 10px;
+            }
+
+
+            .input-gray {
+                background-color: rgb(15, 23, 42); /* abu-abu */
+                color: #ffffff; /* warna teks input */
+                border: none;
+                border-block-color: #1f6feb;
+            }
+
+            .input-gray::placeholder {
+                color: #ffffff; /* placeholder putih */
+                opacity: 1; /* biar tidak pudar */
+            }
+
+            /* optional biar lebih enak dilihat */
+            .input-gray:focus {
+                background-color: rgb(15, 23, 42); !important;
+                color: #fff !important;
+                border-color: #adb5bd !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+
+            .input-gray:valid,
+            .input-gray:invalid {
+                background-color: rgb(15, 23, 42); !important;
+                color: #fff !important;
+            }
+
+            /* 🔥 autofill Chrome (INI PENTING) */
+            .input-gray:-webkit-autofill,
+            .input-gray:-webkit-autofill:hover,
+            .input-gray:-webkit-autofill:focus,
+            .input-gray:-webkit-autofill:active {
+                -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+                -webkit-text-fill-color: #fff !important;
+                transition: background-color 9999s ease-in-out 0s;
+            }
+
+
+    body(class="hold-transition login-page")
+
+        .login-box
+            .card
+                .card-body.login-card-body
+
+                    .login-title Selamat datang kembali
+                    .login-subtitle Masuk ke akun Anda
+
+                    if typeof errorMsg !== 'undefined' && errorMsg
+                        .alert.alert-danger(role="alert")= errorMsg
+
+                    form(action="/login" method="POST")
+
+                        .mb-3
+                            - var emailClass = ['form-control', (typeof fieldErrors !== 'undefined' && fieldErrors && fieldErrors.email) ? 'is-invalid' : ''].join(' ').trim()
+                            input.input-gray(
+                                class=emailClass,
+                                type="email",
+                                name="email",
+                                placeholder="Email",
+                                required,
+                                autofocus,
+                                value=(old && old.email) ? old.email : ''
+                            )
+                            if fieldErrors && fieldErrors.email
+                                .invalid-feedback(style="display:block")= fieldErrors.email
+
+                        .mb-3
+                            - var pwClass = ['form-control', (typeof fieldErrors !== 'undefined' && fieldErrors && fieldErrors.password) ? 'is-invalid' : ''].join(' ').trim()
+                            .input-group.bdr-radius.input-gray
+                                input.input-gray#password(
+                                    class=pwClass,
+                                    type="password",
+                                    name="password",
+                                    placeholder="Kata sandi",
+                                    required
+                                )
+
+                                .input-group-append.bdr-radius.input-gray
+                                    .input-group-text.bdr-radius.input-gray(style="cursor:pointer")
+                                        i.fas.fa-eye.bdr-radius#togglePassword
+
+                            if fieldErrors && fieldErrors.password
+                                .invalid-feedback(style="display:block")= fieldErrors.password
+
+                        button.btn.btn-primary.btn-block(type="submit")
+                            | Masuk
+
+        script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js")
+        script(src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js")
+
+        script.
+            document.getElementById('togglePassword').addEventListener('click', function () {
+                const passwordInput = document.getElementById('password');
+                const icon = this;
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });

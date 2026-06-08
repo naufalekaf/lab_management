@@ -1,0 +1,84 @@
+extends ../layouts/main
+
+block content
+    .card.user-card
+
+        .card-body
+
+            h3.text-white.mb-1 Tambah Pengguna
+            p.text-muted.mb-4 Tambahkan akun pengguna baru ke dalam sistem.
+
+            form(action="/users/store" method="POST")
+
+                .form-group
+                    label.text-light Nama Lengkap
+
+                    input.form-control.input-gray(
+                        type="text"
+                        name="full_name"
+                        placeholder="Masukkan nama lengkap"
+                        required
+                    )
+
+                .form-group
+                    label.text-light Email
+
+                    input.form-control.input-gray(
+                        type="email"
+                        name="email"
+                        placeholder="Masukkan alamat email"
+                        required
+                    )
+
+                .form-group
+                    label.text-light Kata Sandi
+
+                    .input-group.bdr-radius.input-gray
+
+                        input#password.form-control.input-gray(
+                            type="password"
+                            name="password"
+                            placeholder="Masukkan kata sandi"
+                            required
+                        )
+
+                        .input-group-append.bdr-radius.input-gray
+                            .input-group-text.bdr-radius.input-gray(style="cursor:pointer")
+                                i.fas.fa-eye#togglePassword
+
+                .form-group
+                    label.text-light Peran Pengguna
+
+                    select.form-control.input-gray.mr-2(name="role_id")
+
+                        each role in roles
+                            option(value=role.id)
+                                = role.role_name
+
+                .d-flex.justify-content-end.mt-4
+
+                    a.btn.btn-secondary.mr-2(
+                        href="/users"
+                    )
+
+                        | Batal
+
+                    button.btn.btn-primary(
+                        type="submit"
+                    )
+                        | Simpan
+    script.
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });

@@ -1,0 +1,13 @@
+node_modules/
+.env
+
+uploads/
+temp/
+
+npm-debug.log
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db

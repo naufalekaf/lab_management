@@ -1,0 +1,64 @@
+link(rel="stylesheet", href="bootstrap.css")
+link(rel="stylesheet", href="adminlte.css")
+link(rel="stylesheet", href="/css/style.css")
+
+aside.main-sidebar.sidebar-dark-primary.elevation-4.z-ind-1
+
+    .sidebar
+
+        .user-panel.mt-3.pb-3.mb-3.d-flex
+
+            .info
+                a.d-block(
+                    href="#"
+                    data-toggle="collapse"
+                    data-target="#profileMenu"
+                    aria-expanded="false"
+                )
+                    i.fas.fa-user-circle.mr-2
+                    = user ? user.full_name : 'Tamu'
+
+                .collapse.mt-2#profileMenu
+
+                    a.d-block.py-1(href="/profile")
+                        i.fas.fa-id-card.mr-2
+                        | Profil Saya
+
+                    a.d-block.py-1(href="/change-password")
+                        i.fas.fa-key.mr-2
+                        | Ubah Password
+
+                    form(action="/logout" method="POST")
+                        button.btn.btn-link.text-left.p-0(type="submit")
+                            i.fas.fa-sign-out-alt.mr-2
+                            | Keluar
+
+        nav.mt-2
+
+            ul.nav.nav-pills.nav-sidebar.flex-column
+
+                li.nav-item
+                    a.nav-link(href="/dashboard")
+                        p Dashboard
+
+                if user && user.role_name === 'ADMIN'
+
+                    li.nav-item
+                        a.nav-link(href="/users")
+                            p Manajemen Pengguna
+
+                    li.nav-item
+                        a.nav-link(href="/rooms")
+                            p Manajemen Ruangan
+
+                if user && user.role_name === 'KEPALA_LAB'
+
+                    li.nav-item
+                        a.nav-link(href="/procurement")
+                            p Pengadaan
+
+                if user && user.role_name === 'KAPRODI'
+
+                    li.nav-item
+                        a.nav-link(href="/review-procurement")
+                            p Review Pengadaan

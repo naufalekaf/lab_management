@@ -1,0 +1,83 @@
+extends ../layouts/main
+
+block content
+
+  .card
+
+    .card-header
+
+      h3 Edit Barang
+
+    .card-body
+
+      form(
+        action=`/procurement-item/${item.id}/update`
+        method="POST"
+      )
+
+        .form-group
+
+          label Jenis Barang
+
+          select.form-control(
+            name="item_type"
+          )
+
+            option(
+              value="INVENTARIS"
+              selected=item.item_type === 'INVENTARIS'
+            )
+              | Inventaris
+
+            option(
+              value="BHP"
+              selected=item.item_type === 'BHP'
+            )
+              | BHP
+
+        .form-group
+
+          label Nama Barang
+
+          input.form-control(
+            type="text"
+            name="item_name"
+            value=item.item_name
+          )
+
+        .form-group
+
+          label Jumlah
+
+          input.form-control(
+            type="number"
+            name="quantity"
+            value=item.quantity
+          )
+
+        .form-group
+
+          label Estimasi Harga
+
+          input.form-control(
+            type="number"
+            name="estimated_price"
+            value=item.estimated_price
+          )
+
+        .form-group
+
+          label Link Pembelian
+
+          input.form-control(
+            type="text"
+            name="purchase_link"
+            value=item.purchase_link
+          )
+
+        br
+
+        button.btn.btn-primary(
+          type="submit"
+        )
+          | Update

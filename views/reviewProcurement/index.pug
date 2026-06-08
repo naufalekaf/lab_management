@@ -1,0 +1,49 @@
+extends ../layouts/main
+
+block content
+
+    .card
+
+        .card-header
+
+            h3.card-title
+                | Review Pengadaan
+
+        .card-body
+
+            table.table.table-bordered
+
+                thead
+
+                    tr
+
+                        th ID
+
+                        th Tahun
+
+                        th Pemohon
+
+                        th Status
+
+                        th Aksi
+
+                tbody
+
+                    each draft in drafts
+
+                        tr
+
+                            td= draft.id
+
+                            td= draft.procurement_year
+
+                            td= draft.full_name
+
+                            td= draft.draft_status
+
+                            td
+
+                                a.btn.btn-info(
+                                    href=`/review-procurement/${draft.id}`
+                                )
+                                    | Detail

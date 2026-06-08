@@ -1,0 +1,31 @@
+extends ../layouts/main
+
+block content
+
+  .row
+
+    .col-md-12
+
+      .card
+
+        .card-body
+          .row.g-10
+
+            if totalUsers !== undefined
+              .col-md-4
+                .stat-box.border-info
+                  h3= totalUsers
+                  h6.mt-2 Total Pengguna
+
+            if activeUsers !== undefined
+              .col-md-4
+                .stat-box.border-success
+                  h3= activeUsers
+                  h6.mt-2 Pengguna Aktif
+
+            if totalRooms !== undefined
+              .col-md-4
+                .stat-box.border-warning
+                  h3= totalRooms
+                  h6.mt-2 Ruangan
+

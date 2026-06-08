@@ -1,0 +1,321 @@
+.main-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(12px);
+}
+
+/* agar konten tidak ketutup sidebar */
+.content-wrapper {
+    margin-left: 250px;
+}
+
+/* scrollbar lebih halus */
+.main-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+.bg-navy {
+    background-color: #0f172a !important;
+}
+
+
+body.login-page {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.login-box {
+    width: 420px;
+}
+
+/* FIX: Card jadi transparan (hilangkan putih AdminLTE) */
+.card {
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    border: none;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+}
+
+.login-card-body {
+    background: transparent !important;
+    color: #fff;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.login-title {
+    text-align: center;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.form-control {
+    border-radius: 10px;
+    height: 45px;
+}
+
+.btn-primary {
+    border-radius: 10px;
+    height: 45px;
+    font-weight: 600;
+}
+
+.input-group-text {
+    border-radius: 0 10px 10px 0;
+}
+
+.input-group .form-control {
+    border-radius: 10px 0 0 10px;
+}
+
+.bdr-radius{
+    border-radius: 10px;
+}
+
+
+.input-gray {
+    background-color: rgb(15, 23, 42); /* abu-abu */
+    color: #ffffff; /* warna teks input */
+    border: none;
+    border-block-color: #1f6feb;
+}
+
+.input-gray::placeholder {
+    color: #ffffff; /* placeholder putih */
+    opacity: 1; /* biar tidak pudar */
+}
+
+/* optional biar lebih enak dilihat */
+.input-gray:focus {
+    background-color: rgb(15, 23, 42); !important;
+    color: #fff !important;
+    border-color: #adb5bd !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.input-gray:valid,
+.input-gray:invalid {
+    background-color: rgb(15, 23, 42); !important;
+    color: #fff !important;
+}
+
+/* 🔥 autofill Chrome (INI PENTING) */
+.input-gray:-webkit-autofill,
+.input-gray:-webkit-autofill:hover,
+.input-gray:-webkit-autofill:focus,
+.input-gray:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+    -webkit-text-fill-color: #fff !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #0b0f1a;
+    color: #e2e8f0;
+}
+
+/* ===== NAVBAR ===== */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 20px;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    z-index: 1000;
+}
+
+.app-name {
+    font-weight: bold;
+}
+
+.page-title {
+    opacity: 0.8;
+    font-size: 16px;
+}
+
+/* ===== LAYOUT WRAPPER ===== */
+.app-container {
+    display: flex;
+    margin-top: 60px;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+
+    width: 240px;
+    height: calc(100vh - 60px);
+
+    background: rgba(12, 18, 35, 0.95);
+    backdrop-filter: blur(12px);
+
+    padding: 15px;
+}
+
+.menu-label {
+    font-size: 11px;
+    opacity: 0.5;
+    margin: 10px 0;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px;
+    border-radius: 10px;
+
+    color: #cbd5e1;
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.menu:hover {
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+}
+
+/* ===== CONTENT ===== */
+.content {
+    margin-left: 240px;
+    padding: 25px;
+    width: 100%;
+}
+
+.z-ind-1{
+    z-index: 999;
+}
+
+.z-ind-1000{
+    z-index: 100;
+}
+
+.stat-box {
+    border: 2px solid;
+    border-radius: 12px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(6px);
+    transition: 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+}
+
+/* INFO (BLUE) */
+.border-info {
+    border-color: #17a2b8;
+    background: rgba(23, 162, 184, 0.08);
+}
+
+/* SUCCESS (GREEN) */
+.border-success {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.08);
+}
+
+/* WARNING (YELLOW) */
+.border-warning {
+    border-color: #ffc107;
+    background: rgba(255, 193, 7, 0.10);
+}
+
+.stat-box h3 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.stat-box p {
+    margin: 5px 0 0;
+    color: #666;
+}
+
+
+/*table*/
+.user-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+
+/* Header biar nyatu dengan dark theme */
+.card-header {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Table style modern dark */
+.table-dark {
+    background-color: transparent !important;
+    color: #e2e8f0;
+}
+
+.table-dark thead th {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.table-dark tbody tr {
+    transition: 0.2s;
+}
+
+.table-dark tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+    transform: scale(1.01);
+}
+
+/* Badge lebih smooth */
+.badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+/* tombol lebih clean */
+.btn {
+    border-radius: 10px;
+}

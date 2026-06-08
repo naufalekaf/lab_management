@@ -1,0 +1,168 @@
+extends ../layouts/main
+
+block content
+
+  h2
+    | Review Draft
+
+  p
+    strong Tahun :
+    = draft.procurement_year
+
+  p
+    strong Status :
+    = draft.draft_status
+
+  table.table.table-bordered
+
+    thead
+
+      tr
+
+        th Nama Barang
+
+        th Jenis
+
+        th Qty
+
+        th Harga
+
+        th Status
+
+        th Catatan
+
+        th Aksi
+
+    tbody
+
+        each item in items
+
+          tr
+
+          .modal.fade(
+            id=`rejectModal${item.id}`
+          )
+
+            .modal-dialog
+
+              .modal-content
+
+                .modal-header
+
+                  h5.modal-title
+                    | Alasan Penolakan
+
+                  button.close(
+                    type="button"
+                    data-dismiss="modal"
+                  )
+                    span ×
+
+                form(
+                  action=`/review-procurement/item/${item.id}/reject`
+                  method="POST"
+                )
+
+                  .modal-body
+
+                    .form-group
+
+                      label
+                        | Alasan
+
+                      textarea.form-control(
+                        name="approval_notes"
+                        rows="4"
+                        required
+                      )
+
+                  .modal-footer
+
+                    button.btn.btn-secondary(
+                      type="button"
+                      data-dismiss="modal"
+                    )
+                      | Batal
+
+                    button.btn.btn-danger(
+                      type="submit"
+                    )
+                      | Tolak Barang
+
+            td= item.item_name
+
+            td= item.item_type
+
+            td= item.quantity
+
+            td= item.estimated_price
+
+            td
+              if item.approval_status == 'DISETUJUI'
+                span.text-success DISETUJUI
+              else if item.approval_status == 'DITOLAK'
+                span.text-danger DITOLAK
+              else
+                span.text-warning MENUNGGU
+
+            td
+
+                if item.approval_notes
+                  = item.approval_notes
+                else
+                  | -
+
+            td
+
+                  form(
+                    action=`/review-procurement/item/${item.id}/approve`
+                    method="POST"
+                    style="display:inline"
+                  )
+
+                    button.btn.btn-success(
+                      type="submit"
+                    )
+                      | Setujui
+
+                  button.btn.btn-danger.ml-3(
+                    type="button"
+                    data-toggle="modal"
+                    data-target=`#rejectModal${item.id}`
+                  )
+                    | Tolak
+
+  hr
+  .row.mt-3
+
+    .col-md-12.d-flex.justify-content-end
+
+      if draft.draft_status == 'DIAJUKAN'
+
+        form(
+          action=`/review-procurement/${draft.id}/start-review`
+          method="POST"
+        )
+
+          button.btn.btn-primary.mr-3(
+            type="submit"
+          )
+            | Simpan Review
+      form(
+        action=`/review-procurement/${draft.id}/finalize`
+        method="POST"
+      )
+
+        button.btn.btn-success.mr-12(
+          type="submit"
+        )
+          | Kunci Draft
+
+
+
+
+
+
+
+
+

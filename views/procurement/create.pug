@@ -1,0 +1,44 @@
+extends ../layouts/main
+
+block content
+
+    .container-fluid
+
+        h1 Tambah Draft Pengadaan
+
+        form(
+            action='/procurement/store'
+            method='POST'
+        )
+
+            .mb-3
+                label.form-label Judul Draft
+                input.form-control(
+                    type='text'
+                    name='draft_title'
+                    required
+                )
+
+            .mb-3
+
+                label.form-label Tahun Pengadaan
+
+                input.form-control(
+                    type='number'
+                    name='procurement_year'
+                    required
+                )
+
+            .mb-3
+
+                label.form-label Catatan
+
+                textarea.form-control(
+                    name='notes'
+                    rows='5'
+                )
+
+            button.btn.btn-success(
+                type='submit'
+            )
+                | Simpan
