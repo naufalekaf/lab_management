@@ -242,6 +242,12 @@ body {
     transform: translateY(-3px);
 }
 
+/* PRIMARY (BLUE) */
+.border-primary {
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.08);
+}
+
 /* INFO (BLUE) */
 .border-info {
     border-color: #17a2b8;

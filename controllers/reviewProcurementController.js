@@ -3,40 +3,41 @@ const ProcurementDraft = require('../models/ProcurementDraft');
 const ProcurementItem = require('../models/ProcurementItem');
 const sequelize = require('../config/database');
 
-const reviewProcurementController = {index: async (req, res) => {
+const reviewProcurementController = {
+    index: async (req, res) => {
         try {
-            const drafts =
-                await sequelize.query(
-                    `
+
+            const drafts = await sequelize.query(
+                `
                     SELECT
                         pd.*,
                         u.full_name
                     FROM procurement_draft pd
-                    JOIN user u
-                        ON pd.created_by = u.id
-                    WHERE pd.draft_status = 'DIAJUKAN'
+                             JOIN user u
+                                  ON pd.created_by = u.id
                     ORDER BY pd.id ASC
-                    `,
-                    {
-                        type: QueryTypes.SELECT,
-                    }
-                );
-
-            res.render(
-                'reviewProcurement/index',
+                `,
                 {
-                    drafts,
+                    type: QueryTypes.SELECT,
                 }
             );
 
+            const notReviewed = drafts.filter(d => d.draft_status === 'DIAJUKAN');
+            const reviewing = drafts.filter(d => d.draft_status === 'SEDANG_DIREVIEW');
+
+            res.render('reviewProcurement/index', {
+                notReviewed,
+                reviewing,
+                pageTitle: 'Review Pengadaan'
+            });
+
         } catch (error) {
             console.log(error);
-            res.send(
-                'Database Error'
-            );
+            res.send('Database Error');
         }
-
     },
+
+
 
     show: async (req, res) => {
         try {
@@ -57,6 +58,7 @@ const reviewProcurementController = {index: async (req, res) => {
                 {
                     draft,
                     items,
+                    pageTitle: 'Review Pengadaan'
                 }
             );
         } catch (error) {

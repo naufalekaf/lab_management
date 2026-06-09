@@ -2,167 +2,223 @@ extends ../layouts/main
 
 block content
 
-  h2
-    | Review Draft
-
-  p
-    strong Tahun :
-    = draft.procurement_year
-
-  p
-    strong Status :
-    = draft.draft_status
-
-  table.table.table-bordered
-
-    thead
-
-      tr
-
-        th Nama Barang
-
-        th Jenis
-
-        th Qty
-
-        th Harga
-
-        th Status
-
-        th Catatan
-
-        th Aksi
-
-    tbody
-
-        each item in items
-
-          tr
-
-          .modal.fade(
-            id=`rejectModal${item.id}`
-          )
-
-            .modal-dialog
-
-              .modal-content
-
-                .modal-header
-
-                  h5.modal-title
-                    | Alasan Penolakan
-
-                  button.close(
-                    type="button"
-                    data-dismiss="modal"
-                  )
-                    span ×
-
-                form(
-                  action=`/review-procurement/item/${item.id}/reject`
-                  method="POST"
-                )
-
-                  .modal-body
-
-                    .form-group
-
-                      label
-                        | Alasan
-
-                      textarea.form-control(
-                        name="approval_notes"
-                        rows="4"
-                        required
-                      )
-
-                  .modal-footer
-
-                    button.btn.btn-secondary(
-                      type="button"
-                      data-dismiss="modal"
-                    )
-                      | Batal
-
-                    button.btn.btn-danger(
-                      type="submit"
-                    )
-                      | Tolak Barang
-
-            td= item.item_name
-
-            td= item.item_type
-
-            td= item.quantity
-
-            td= item.estimated_price
-
-            td
-              if item.approval_status == 'DISETUJUI'
-                span.text-success DISETUJUI
-              else if item.approval_status == 'DITOLAK'
-                span.text-danger DITOLAK
-              else
-                span.text-warning MENUNGGU
-
-            td
-
-                if item.approval_notes
-                  = item.approval_notes
-                else
-                  | -
-
-            td
-
-                  form(
-                    action=`/review-procurement/item/${item.id}/approve`
-                    method="POST"
-                    style="display:inline"
-                  )
-
-                    button.btn.btn-success(
-                      type="submit"
-                    )
-                      | Setujui
-
-                  button.btn.btn-danger.ml-3(
-                    type="button"
-                    data-toggle="modal"
-                    data-target=`#rejectModal${item.id}`
-                  )
-                    | Tolak
-
-  hr
-  .row.mt-3
-
-    .col-md-12.d-flex.justify-content-end
-
-      if draft.draft_status == 'DIAJUKAN'
-
-        form(
-          action=`/review-procurement/${draft.id}/start-review`
-          method="POST"
-        )
-
-          button.btn.btn-primary.mr-3(
-            type="submit"
-          )
-            | Simpan Review
-      form(
-        action=`/review-procurement/${draft.id}/finalize`
-        method="POST"
-      )
-
-        button.btn.btn-success.mr-12(
-          type="submit"
-        )
-          | Kunci Draft
 
 
+  .container-fluid
+
+    .row
+      .col-md-12
+
+        .card.user-card
+          .card-body
+
+            .d-flex.justify-content-between.align-items-center.mb-4
+              div
+                h3.text-white.mb-1 Review Draft
+                p.text-muted.mb-0 Detail dan daftar barang untuk direview.
+
+              // badge status draft (samakan style dengan procurement/show.pug)
+              span.badge.badge-pill.px-3.py-2(
+                class=
+                draft.draft_status === 'DRAF' ? 'badge-secondary' :
+                    draft.draft_status === 'DIAJUKAN' ? 'badge-info' :
+                        draft.draft_status === 'SEDANG_DIREVIEW' ? 'badge-warning' :
+                            draft.draft_status === 'TERKUNCI' ? 'badge-success' :
+                                'badge-danger'
+              )= draft.draft_status
+
+            .table-responsive
+              table.table.table-dark.table-borderless
+                tr
+                  th(style="width:220px") Tahun
+                  td= draft.procurement_year
+                tr
+                  th Status
+                  td= draft.draft_status
+                tr
+                  th Judul Draft
+                  td= draft.draft_title
+                tr
+                  th Catatan
+                  td= draft.notes || '-'
+
+    // Daftar barang yang direview
+    .row.mt-3
+      .col-md-12
+        .card.user-card
+          .card-body
+
+            .d-flex.justify-content-between.align-items-center.mb-4
+              div
+                h4.text-white.mb-1 Daftar Barang
+                p.text-muted.mb-0 Barang pada draft ini beserta status review.
+
+            .table-responsive
+              table.table.table-dark.table-hover.table-borderless
+                thead
+                  tr
+                    th No
+                    th Nama Barang
+                    th Jenis
+                    th Qty
+                    th Harga Per Unit
+                    th Total Harga
+                    th Status
+                    th Catatan
+                    if draft.draft_status != 'TERKUNCI'
+                      th.text-center(width="150") Aksi
+                tbody
+                  if !items || items.length === 0
+                    tr
+                      td(colspan="9" class="text-center text-muted") Belum ada barang
+                  else
+                      each item, index in items
+                        tr
+                          td= index + 1
+                          td.font-weight-bold= item.item_name
+                          td= item.item_type
+                          td= item.quantity
+                          td= (Number(item.unit_price) || 0).toLocaleString('id-ID')
+                          td= (Number(item.total_price) || 0).toLocaleString('id-ID')
+                          td
+                            if item.approval_status == 'MENUNGGU'
+                              span.badge.badge-warning Menunggu
+                            else if item.approval_status == 'DISETUJUI'
+                              span.badge.badge-success Disetujui
+                            else if item.approval_status == 'DITOLAK'
+                              span.badge.badge-danger Ditolak
+                            else
+                              span.badge.badge-secondary= item.approval_status
+                          td
+                            if item.approval_notes
+                              = item.approval_notes
+                            else
+                              | -
+                          if draft.draft_status != 'TERKUNCI'
+                            td.text-center
+                              // tombol Setujui — form POST
+                              form(action=`/review-procurement/item/${item.id}/approve` method="POST" style="display:inline;")
+                                button.btn.btn-success.btn-sm(type="submit" title="Setujui")
+                                  i.fas.fa-check
+                              // tombol Tolak — buka modal global, data-id berisi item.id
+                              button.btn.btn-danger.btn-sm.ml-2.btn-reject(type="button" data-id=item.id title="Tolak")
+                                i.fas.fa-times
+
+    // Modal penolakan global (1 modal untuk semua item)
+    // Modal penolakan global (1 modal untuk semua item) - theme-aligned
+    // styling kecil untuk memastikan textarea gelap
+    style.
+        /* Modal dark theme tweaks */
+        .modal-content.modal-dark {
+            background-color: #343a40; /* dark background */
+            color: #f8f9fa; /* light text */
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .modal-content.modal-dark .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .modal-content.modal-dark .modal-title {
+            color: #ffffff;
+        }
+
+        .modal-content.modal-dark .close span {
+            color: #ffffff;
+        }
+
+        .form-control-dark {
+            background-color: #1f2d3d;
+            color: #f8f9fa;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .form-control-dark::placeholder {
+            color: rgba(248, 249, 250, 0.5);
+        }
+
+        /* adjust modal footer buttons spacing */
+        .modal-footer .btn + .btn {
+            margin-left: 0.5rem;
+        }
+
+    .modal.fade#rejectModal(tabindex="-1" role="dialog" aria-hidden="true")
+      .modal-dialog.modal-dialog-centered(role="document")
+        .modal-content.modal-dark
+          .modal-header
+            h5.modal-title
+              i.fas.fa-exclamation-circle.mr-2
+              | Alasan Penolakan
+            button.close(type="button" data-dismiss="modal" aria-label="Close")
+              span(aria-hidden="true") ×
+          // form action akan di-set secara dinamis via JS
+          form#rejectForm(method="POST" action="")
+            .modal-body
+              p.text-muted.mb-2 Silakan masukkan alasan penolakan barang ini. Catatan akan terlihat oleh pemohon.
+              .form-group
+                label.font-weight-bold(for="approval_notes") Alasan
+                textarea#approval_notes.form-control.form-control-dark(name="approval_notes" rows="4" required placeholder="Tulis alasan penolakan...")
+
+            .modal-footer
+              button.btn.btn-outline-light(type="button" data-dismiss="modal") Batal
+              button.btn.btn-danger(type="submit")
+                i.fas.fa-times-circle.mr-1
+                | Tolak Barang
 
 
+    // Ringkasan total (jika perlu)
+    .row.mt-3
+      .col-md-12
+        .card.user-card
+          .card-body.text-center
+            h6.text-muted.mb-2 Total Pengadaan
+              - const grandTotal = (items || []).reduce((t, it) => t + Number(it.total_price || 0), 0);
+            h2.text-white.mb-0
+              | Rp. #{Number(grandTotal).toLocaleString('id-ID')}
 
+    // Aksi di bagian bawah: Simpan Review (start) dan Kunci Draft (finalize)
+    .row.mt-3
+      .col-md-12.d-flex.justify-content-end
+        if draft.draft_status === 'DIAJUKAN'
+          form(action=`/review-procurement/${draft.id}/start-review` method="POST" style="display:inline;")
+            button.btn.btn-primary.mr-3(type="submit") Simpan Review
+        if draft.draft_status === 'SEDANG_DIREVIEW' || draft.draft_status === 'DIAJUKAN'
+        form(action=`/review-procurement/${draft.id}/finalize` method="POST" style="display:inline;")
+          button.btn.btn-success(type="submit") Kunci Draft
 
+    .row.mt-3
+      .col-md-12.d-flex.justify-content-start
+        a.btn.btn-secondary(href="/review-procurement") Kembali
 
-
-
+  // Script untuk modal penolakan global — tunggu jQuery sebelum bind
+  // Script untuk modal penolakan global — tunggu jQuery sebelum bind
+  script.
+      (function waitForjQuery() {
+          if (window.jQuery) {
+              (function ($) {
+                  // hapus handler lama jika ada, lalu pasang
+                  $(document).off('click', '.btn-reject');
+                  $(document).on('click', '.btn-reject', function () {
+                      var id = $(this).data('id');
+                      if (!id) return;
+                      // set action untuk form
+                      $('#rejectForm').attr('action', '/review-procurement/item/' + id + '/reject');
+                      // kosongkan atau reset textarea
+                      $('#approval_notes').val('');
+                      // tampilkan modal dan fokus textarea
+                      $('#rejectModal').modal('show');
+                      setTimeout(function () {
+                          $('#approval_notes').focus();
+                      }, 300);
+                  });
+                  // optional: saat modal hide, clear action
+                  $('#rejectModal').on('hidden.bs.modal', function () {
+                      $('#rejectForm').attr('action', '');
+                      $('#approval_notes').val('');
+                  });
+              })(window.jQuery);
+          } else {
+              setTimeout(waitForjQuery, 50);
+          }
+      })();

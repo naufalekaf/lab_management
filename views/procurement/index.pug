@@ -1,56 +1,88 @@
 extends ../layouts/main
 
 block content
+    .card.user-card
 
-    .container-fluid
+        .card-body
 
-        h1.mb-3 Draft Pengadaan
+            .d-flex.justify-content-between.align-items-center.mb-4
 
-        a.btn.btn-primary.mb-3(
-            href='/procurement/create'
-        )
-            | Tambah Draft
+                div
+                    h3.text-white.mb-1 Draft Pengadaan
+                    p.text-muted.mb-0 Kelola draft usulan pengadaan barang dan peralatan laboratorium.
 
-        table.table.table-bordered
+                a.btn.btn-primary.add-user-btn(
+                    href='/procurement/create'
+                )
+                    | Tambah Draft
 
-            thead
+            .table-responsive
 
-                tr
-                    th ID
-                    th Judul Draft
-                    th Tahun
-                    th Status
-                    th Aksi
+                table.table.table-dark.table-hover.table-borderless
 
-            tbody
+                    thead
+                        tr
+                            th ID
+                            th Judul Draft
+                            th Tahun
+                            th Status
+                            th.text-center Aksi
 
-                each draft in drafts
+                    tbody
 
-                    tr
+                        each draft in drafts
 
-                        td= draft.id
-                        td= draft.draft_title
-                        td= draft.procurement_year
-                        td= draft.draft_status
-                        td
+                            tr
 
-                            a.btn.btn-info.btn-sm.me-1(
-                                href=`/procurement/${draft.id}`
-                            )
-                                | Detail
+                                td= draft.id
+                                td.font-weight-bold= draft.draft_title
+                                td= draft.procurement_year
 
-                            a.btn.btn-warning.btn-sm.me-1.ml-3(
-                                href=`/procurement/${draft.id}/edit`
-                            )
-                                | Edit
+                                td
 
-                            form(
-                                action=`/procurement/${draft.id}/delete`
-                                method='POST'
-                                style='display:inline;'
-                            )
+                                    if draft.draft_status == 'DRAF'
+                                        span.badge.badge-secondary Draft
 
-                                button.btn.btn-danger.btn-sm.ml-3(
-                                    type='submit'
-                                )
-                                    | Hapus
+                                    else if draft.draft_status == 'DIAJUKAN'
+                                        span.badge.badge-info Diajukan
+
+                                    else if draft.draft_status == 'DIREVIEW'
+                                        span.badge.badge-warning Direview
+
+                                    else if draft.draft_status == 'DISETUJUI'
+                                        span.badge.badge-success Disetujui
+
+                                    else if draft.draft_status == 'DITOLAK'
+                                        span.badge.badge-danger Ditolak
+
+                                    else
+                                        span.badge.badge-light= draft.draft_status
+
+                                td.text-center
+
+                                    a.btn.btn-info.btn-sm.mr-1(
+                                        href=`/procurement/${draft.id}`
+                                        title='Detail'
+                                    )
+                                        i.fas.fa-eye
+
+                                    if draft.draft_status == 'DRAF' || draft.draft_status == 'DIAJUKAN'
+
+                                        a.btn.btn-warning.btn-sm.mr-1(
+                                            href=`/procurement/${draft.id}/edit`
+                                            title='Edit'
+                                        )
+                                            i.fas.fa-edit
+
+                                        form(
+                                            action=`/procurement/${draft.id}/delete`
+                                            method='POST'
+                                            style='display:inline;'
+                                        )
+
+                                            button.btn.btn-danger.btn-sm(
+                                                type='submit'
+                                                title='Hapus'
+                                                onclick="return confirm('Yakin ingin menghapus draft ini?')"
+                                            )
+                                                i.fas.fa-trash
