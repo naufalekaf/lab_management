@@ -206,8 +206,8 @@ const goodsReceiptController = {
                 receipt_notes: receipt_notes || ''
             });
 
-            // If item_type is INVENTARIS, instantiate individual inventory items
-            if (item.item_type === 'INVENTARIS') {
+            // If item_type is INVENTARIS or BHP, instantiate individual inventory items
+            if (item.item_type === 'INVENTARIS' || item.item_type === 'BHP') {
                 let catId = item.inventory_category_id;
                 if (!catId) {
                     const firstCat = await InventoryCategory.findOne();
@@ -227,7 +227,7 @@ const goodsReceiptController = {
                         goods_receipt_id: receipt.id,
                         inventory_code: tempCode,
                         inventory_name: item.item_name,
-                        purchase_price: item.estimated_price,
+                        purchase_price: item.unit_price,
                         purchase_date: finalDate,
                         condition_status: 'BAIK',
                         inventory_status: 'AKTIF',

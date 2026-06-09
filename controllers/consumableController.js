@@ -104,9 +104,21 @@ const consumableController = {
                 { type: QueryTypes.SELECT }
             );
 
+            const logs = await sequelize.query(
+                `
+                SELECT sm.*, c.consumable_name, c.unit, u.full_name as operator_name
+                FROM stock_movement sm
+                JOIN consumable c ON sm.consumable_id = c.id
+                LEFT JOIN user u ON sm.created_by = u.id
+                ORDER BY sm.created_at DESC, sm.id DESC
+                `,
+                { type: QueryTypes.SELECT }
+            );
+
             res.render('consumables/index', {
                 title: 'Kelola Stok BHP',
-                consumables
+                consumables,
+                logs
             });
         } catch (error) {
             console.error(error);

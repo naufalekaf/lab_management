@@ -64,6 +64,52 @@ block content
                             i.fas.fa-sliders-h.mr-1
                             | Sesuaikan Stok
 
+    .row.mt-4
+      .col-12
+        .card
+          .card-header.bg-navy
+            h5.card-title.text-white.m-0
+              i.fas.fa-history.mr-2
+              | Riwayat Mutasi Stok BHP (Log Masuk / Keluar)
+          .card-body
+            .table-responsive
+              table.table.table-striped.text-white(style="background: transparent;")
+                thead
+                  tr.text-muted
+                    th Waktu
+                    th Nama BHP
+                    th Tipe
+                    th Jumlah
+                    th Sumber / Referensi
+                    th Catatan
+                    th Operator
+                tbody
+                  if logs.length === 0
+                    tr
+                      td.text-center(colspan="7") Belum ada riwayat mutasi stok BHP.
+                  else
+                    each log in logs
+                      tr
+                        td= new Date(log.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
+                        td.font-weight-bold= log.consumable_name
+                        td
+                          if log.movement_type === 'MASUK'
+                            span.badge.badge-success MASUK
+                          else
+                            span.badge.badge-danger KELUAR
+                        td= `${log.quantity} ${log.unit}`
+                        td
+                          if log.reference_type === 'PENERIMAAN_PENGADAAN'
+                            span.badge.badge-pill.badge-info Penerimaan Pengadaan
+                          else if log.reference_type === 'PENGGUNAAN_MAINTENANCE'
+                            span.badge.badge-pill.badge-warning Penggunaan Perawatan
+                          else if log.reference_type === 'PENYESUAIAN_MANUAL'
+                            span.badge.badge-pill.badge-secondary Penyesuaian Manual
+                          else
+                            span.badge.badge-pill.badge-light= log.reference_type
+                        td= log.notes || '-'
+                        td= log.operator_name || 'Sistem'
+
     // Modals for Stock Adjustments (outside table to prevent backdrop context bug)
     each item in consumables
       .modal.fade(id=`adjustModal-${item.id}` tabindex="-1" role="dialog" aria-labelledby=`adjustModalLabel-${item.id}` aria-hidden="true")

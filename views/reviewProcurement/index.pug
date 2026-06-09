@@ -4,6 +4,15 @@ block content
     .card.user-card
         .card-body
 
+            form.form-inline.mb-4(method='GET' action='/review-procurement')
+                .form-group.mr-2
+                    label.text-muted.mr-2(for='year') Filter Tahun:
+                    select#year.form-control.input-gray.text-white(name='year' onchange='this.form.submit()' style='background: #1f2937; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;')
+                        option(value='') -- Semua Tahun --
+                        each yr in availableYears
+                            option(value=yr selected=(yr == selectedYear))= yr
+                if selectedYear
+                    a.btn.btn-outline-secondary.ml-2(href='/review-procurement' style='border-radius: 8px;') Reset
 
             //- Bagian 1: Belum Direview (DIAJUKAN)
             .table-responsive.mb-4

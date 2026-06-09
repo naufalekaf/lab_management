@@ -9,15 +9,34 @@ const ConsumableCategory = require('../models/ConsumableCategory');
 const procurementController = {
     index: async (req, res) => {
         try {
+            const { year } = req.query;
+
+            // 1. Get distinct years for the filter dropdown
+            const yearsResult = await sequelize.query(
+                `SELECT DISTINCT procurement_year FROM procurement_draft ORDER BY procurement_year DESC`,
+                { type: QueryTypes.SELECT }
+            );
+            const availableYears = yearsResult.map(y => y.procurement_year);
+
+            // 2. Build draft query with optional year filter
+            let queryStr = `
+                SELECT procurement_draft.*, user.full_name
+                FROM procurement_draft
+                JOIN user ON procurement_draft.created_by = user.id
+            `;
+            const replacements = {};
+
+            if (year) {
+                queryStr += ` WHERE procurement_draft.procurement_year = :year`;
+                replacements.year = year;
+            }
+
+            queryStr += ` ORDER BY procurement_draft.id ASC`;
+
             const drafts = await sequelize.query(
-                `
-                    SELECT \procurement_draft.*, \ user.full_name
-                    FROM procurement_draft
-                    JOIN user ON procurement_draft.created_by = user.id
-                    ORDER BY procurement_draft.id ASC 
-                `,
+                queryStr,
                 {
-                    replacements: {userId: req.session.user.id},
+                    replacements,
                     type: QueryTypes.SELECT,
                 }
             );
@@ -25,6 +44,8 @@ const procurementController = {
             res.render(
                 'procurement/index', {
                     drafts,
+                    availableYears,
+                    selectedYear: year || '',
                     pageTitle: 'Pengadaan'
                 });
 

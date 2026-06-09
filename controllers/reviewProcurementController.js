@@ -6,18 +6,37 @@ const sequelize = require('../config/database');
 const reviewProcurementController = {
     index: async (req, res) => {
         try {
+            const { year } = req.query;
+
+            // 1. Get distinct years for the filter dropdown
+            const yearsResult = await sequelize.query(
+                `SELECT DISTINCT procurement_year FROM procurement_draft ORDER BY procurement_year DESC`,
+                { type: QueryTypes.SELECT }
+            );
+            const availableYears = yearsResult.map(y => y.procurement_year);
+
+            // 2. Build draft query with optional year filter
+            let queryStr = `
+                SELECT
+                    pd.*,
+                    u.full_name
+                FROM procurement_draft pd
+                         JOIN user u
+                              ON pd.created_by = u.id
+            `;
+            const replacements = {};
+
+            if (year) {
+                queryStr += ` WHERE pd.procurement_year = :year`;
+                replacements.year = year;
+            }
+
+            queryStr += ` ORDER BY pd.id ASC`;
 
             const drafts = await sequelize.query(
-                `
-                    SELECT
-                        pd.*,
-                        u.full_name
-                    FROM procurement_draft pd
-                             JOIN user u
-                                  ON pd.created_by = u.id
-                    ORDER BY pd.id ASC
-                `,
+                queryStr,
                 {
+                    replacements,
                     type: QueryTypes.SELECT,
                 }
             );
@@ -28,6 +47,8 @@ const reviewProcurementController = {
             res.render('reviewProcurement/index', {
                 notReviewed,
                 reviewing,
+                availableYears,
+                selectedYear: year || '',
                 pageTitle: 'Review Pengadaan'
             });
 
