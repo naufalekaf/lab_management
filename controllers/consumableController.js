@@ -26,10 +26,14 @@ const ensureInitialData = async () => {
         const catCount = await ConsumableCategory.count();
         if (catCount === 0) {
             await ConsumableCategory.bulkCreate([
-                { category_name: 'Cairan Kimia' },
-                { category_name: 'Alat Pelindung Dini' },
-                { category_name: 'Alat Gelas' },
-                { category_name: 'Lain-lain' }
+                { category_name: 'ATK' },
+                { category_name: 'Tinta Printer' },
+                { category_name: 'Kabel' },
+                { category_name: 'Komponen Elektronik' },
+                { category_name: 'Perlengkapan Kebersihan' },
+                { category_name: 'Media Penyimpanan' },
+                { category_name: 'Baterai' },
+                { category_name: 'Bahan Habis Pakai Laboratorium' }
             ]);
             console.log('Seeded default BHP categories');
         }
@@ -37,9 +41,9 @@ const ensureInitialData = async () => {
         // 3. Seed consumable if empty
         const consumableCount = await Consumable.count();
         if (consumableCount === 0) {
-            const firstCat = await ConsumableCategory.findOne();
-            const catId = firstCat ? firstCat.id : 1;
-            
+            const labCat = await ConsumableCategory.findOne({ where: { category_name: 'Bahan Habis Pakai Laboratorium' } });
+            const catId = labCat ? labCat.id : null;
+
             await Consumable.bulkCreate([
                 {
                     category_id: catId,
@@ -53,7 +57,7 @@ const ensureInitialData = async () => {
                     is_active: 1
                 },
                 {
-                    category_id: catId + 1, // APD
+                    category_id: catId,
                     consumable_code: 'BHP-MSK-MED',
                     consumable_name: 'Masker Medis',
                     unit: 'Box',
@@ -64,7 +68,7 @@ const ensureInitialData = async () => {
                     is_active: 1
                 },
                 {
-                    category_id: catId + 1, // APD
+                    category_id: catId,
                     consumable_code: 'BHP-ST-LAT',
                     consumable_name: 'Sarung Tangan Latex',
                     unit: 'Box',

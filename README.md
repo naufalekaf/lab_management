@@ -160,7 +160,7 @@ Password : admin123/password
 Email    : budi@lab.com
 Password : password
 ```
-untuk daftaf bisa lihat menggunakan admin
+untuk daftar bisa lihat menggunakan admin
 
 
 ```
