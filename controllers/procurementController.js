@@ -2,6 +2,9 @@ const { QueryTypes } = require('sequelize');
 const ProcurementDraft = require('../models/ProcurementDraft');
 const sequelize = require('../config/database');
 const ProcurementItem = require('../models/ProcurementItem');
+const Inventory = require('../models/Inventory');
+const InventoryCategory = require('../models/InventoryCategory');
+const ConsumableCategory = require('../models/ConsumableCategory');
 
 const procurementController = {
     index: async (req, res) => {
@@ -22,6 +25,7 @@ const procurementController = {
             res.render(
                 'procurement/index', {
                     drafts,
+                    pageTitle: 'Pengadaan'
                 });
 
         } catch (error) {
@@ -34,7 +38,9 @@ const procurementController = {
 
     create: async (req, res) => {
         res.render(
-            'procurement/create'
+            'procurement/create',{
+            pageTitle: 'Tambah Pengadaan',
+        }
         );
     },
 
@@ -76,17 +82,65 @@ const procurementController = {
                     }
                 });
 
-            const items =
-                await ProcurementItem.findAll({
+            const items = await sequelize.query(
+                `
+SELECT
 
-                    where: {
-                        draft_id:
+    procurement_item.*,
+
+    inventory_category.category_name
+        AS inventory_category_name,
+
+    consumable_category.category_name
+        AS consumable_category_name,
+
+    inventory.inventory_name
+        AS replacement_inventory_name
+
+FROM procurement_item
+
+LEFT JOIN inventory_category
+    ON inventory_category.id =
+    procurement_item.inventory_category_id
+
+LEFT JOIN consumable_category
+    ON consumable_category.id =
+    procurement_item.consumable_category_id
+
+LEFT JOIN inventory
+    ON inventory.id =
+    procurement_item.replacement_inventory_id
+
+WHERE procurement_item.draft_id = ?
+
+ORDER BY procurement_item.id DESC
+`,
+                {
+                    replacements: [
                         req.params.id
-                    },
+                    ],
 
-                    order: [
-                        ['id', 'DESC']
-                    ]
+                    type: QueryTypes.SELECT
+                });
+
+            const grandTotal =
+                items.reduce(
+                    (total, item) =>
+                        total + Number(item.total_price),
+                    0
+                );
+
+            const inventoryCategories =
+                await InventoryCategory.findAll();
+
+            const consumableCategories =
+                await ConsumableCategory.findAll();
+
+            const inventories =
+                await Inventory.findAll({
+                    where: {
+                        inventory_status: 'AKTIF'
+                    }
 
                 });
 
@@ -97,7 +151,12 @@ const procurementController = {
             res.render(
                 'procurement/show',{
                     draft,
-                    items
+                    items,
+                    inventories,
+                    consumableCategories,
+                    inventoryCategories,
+                    grandTotal,
+                    pageTitle: draft.draft_title
                 });
 
         } catch (error) {
@@ -127,6 +186,7 @@ const procurementController = {
             res.render(
                 'procurement/edit',{
                     draft,
+                    pageTitle: 'Edit Pengadaan'
                 });
 
         } catch (error) {

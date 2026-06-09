@@ -1,14 +1,12 @@
 extends ../layouts/main
 
 block content
-
-  .card
-
-    .card-header
-
-      h3 Edit Barang
+  .card.user-card
 
     .card-body
+
+      h3.text-white.mb-1 Edit Barang
+      p.text-muted.mb-4 Perbarui informasi barang dalam draft pengadaan.
 
       form(
         action=`/procurement-item/${item.id}/update`
@@ -17,9 +15,9 @@ block content
 
         .form-group
 
-          label Jenis Barang
+          label.text-light Jenis Barang
 
-          select.form-control(
+          select.form-control.input-gray(
             name="item_type"
           )
 
@@ -37,47 +35,59 @@ block content
 
         .form-group
 
-          label Nama Barang
+          label.text-light Nama Barang
 
-          input.form-control(
+          input.form-control.input-gray(
             type="text"
             name="item_name"
             value=item.item_name
+            placeholder="Masukkan nama barang"
+            required
           )
 
         .form-group
 
-          label Jumlah
+          label.text-light Jumlah
 
-          input.form-control(
+          input.form-control.input-gray(
             type="number"
             name="quantity"
             value=item.quantity
+            placeholder="Masukkan jumlah barang"
+            required
           )
 
         .form-group
 
-          label Estimasi Harga
+          label.text-light Harga Satuan
 
-          input.form-control(
+          input.form-control.input-gray(
             type="number"
             name="estimated_price"
             value=item.estimated_price
+            placeholder="Masukkan harga satuan"
+            required
           )
 
         .form-group
 
-          label Link Pembelian
+          label.text-light Link Pembelian
 
-          input.form-control(
+          input.form-control.input-gray(
             type="text"
             name="purchase_link"
             value=item.purchase_link
+            placeholder="Masukkan link pembelian (opsional)"
           )
 
-        br
+        .d-flex.justify-content-end.mt-4
 
-        button.btn.btn-primary(
-          type="submit"
-        )
-          | Update
+          a.btn.btn-secondary.mr-2(
+            href="/procurement"
+          )
+            | Batal
+
+          button.btn.btn-primary(
+            type="submit"
+          )
+            | Simpan Perubahan

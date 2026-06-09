@@ -4,42 +4,53 @@ block content
 
     .container-fluid
 
-        h1 Edit Draft Pengadaan
+        h3.text-white.mb-1 Edit Draft Pengadaan
+        p.text-muted.mb-4 Perbarui informasi draft pengadaan.
 
         form(
             action=`/procurement/${draft.id}/update`
             method='POST'
         )
+            .form-group
+                label.text-light Judul Draft
 
-            .mb-3
-                label.form-label Judul Draft
-                input.form-control(
+                input.form-control.input-gray(
                     type='text'
                     name='draft_title'
+                    placeholder='Masukkan judul draft pengadaan'
                     required
                 )
 
-            .mb-3
+            .form-group
+                label.text-light Tahun Pengadaan
 
-                label.form-label Tahun Pengadaan
-
-                input.form-control(
+                input.form-control.input-gray(
                     type='number'
                     name='procurement_year'
-                    value=draft.procurement_year
+                    placeholder='Contoh: 2026'
+                    min='2025'
                     required
                 )
 
-            .mb-3
+            .form-group
+                label.text-light Catatan
 
-                label.form-label Catatan
-
-                textarea.form-control(
+                textarea.form-control.input-gray(
                     name='notes'
                     rows='5'
-                )= draft.notes
+                    placeholder='Tambahkan catatan atau keterangan jika diperlukan'
+                )
 
-            button.btn.btn-primary(
-                type='submit'
-            )
-                | Update
+            .d-flex.justify-content-end.mt-4
+
+                a.btn.btn-secondary.mr-2(
+                    href='/procurement'
+                )
+                    i.fas.fa-arrow-left.mr-1
+                    | Batal
+
+                button.btn.btn-primary(
+                    type='submit'
+                )
+                    i.fas.fa-save.mr-1
+                    | Simpan Perubahan

@@ -1,44 +1,58 @@
 extends ../layouts/main
 
 block content
+    .card.user-card
 
-    .container-fluid
+        .card-body
 
-        h1 Tambah Draft Pengadaan
+            h3.text-white.mb-1 Tambah Draft Pengadaan
+            p.text-muted.mb-4 Buat draft pengadaan baru sebelum diajukan untuk proses review.
 
-        form(
-            action='/procurement/store'
-            method='POST'
-        )
-
-            .mb-3
-                label.form-label Judul Draft
-                input.form-control(
-                    type='text'
-                    name='draft_title'
-                    required
-                )
-
-            .mb-3
-
-                label.form-label Tahun Pengadaan
-
-                input.form-control(
-                    type='number'
-                    name='procurement_year'
-                    required
-                )
-
-            .mb-3
-
-                label.form-label Catatan
-
-                textarea.form-control(
-                    name='notes'
-                    rows='5'
-                )
-
-            button.btn.btn-success(
-                type='submit'
+            form(
+                action='/procurement/store'
+                method='POST'
             )
-                | Simpan
+
+                .form-group
+                    label.text-light Judul Draft
+
+                    input.form-control.input-gray(
+                        type='text'
+                        name='draft_title'
+                        placeholder='Masukkan judul draft pengadaan'
+                        required
+                    )
+
+                .form-group
+                    label.text-light Tahun Pengadaan
+
+                    input.form-control.input-gray(
+                        type='number'
+                        name='procurement_year'
+                        placeholder='Contoh: 2026'
+                        min='2025'
+                        required
+                    )
+
+                .form-group
+                    label.text-light Catatan
+
+                    textarea.form-control.input-gray(
+                        name='notes'
+                        rows='5'
+                        placeholder='Tambahkan catatan atau keterangan jika diperlukan'
+                    )
+
+                .d-flex.justify-content-end.mt-4
+
+                    a.btn.btn-secondary.mr-2(
+                        href='/procurement'
+                    )
+                        i.fas.fa-arrow-left.mr-1
+                        | Batal
+
+                    button.btn.btn-primary(
+                        type='submit'
+                    )
+                        i.fas.fa-save.mr-1
+                        | Simpan Draft

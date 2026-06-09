@@ -1,49 +1,74 @@
 extends ../layouts/main
 
 block content
-
-    .card
-
-        .card-header
-
-            h3.card-title
-                | Review Pengadaan
-
+    .card.user-card
         .card-body
 
-            table.table.table-bordered
 
-                thead
+            //- Bagian 1: Belum Direview (DIAJUKAN)
+            .table-responsive.mb-4
+                h5.mb-3 Pengadaan — Belum Direview
+                if !notReviewed || notReviewed.length === 0
+                    p.text-muted Tidak ada pengadaan yang menunggu review.
+                else
+                    table.table.table-dark.table-hover.table-borderless
+                        thead
+                            tr
+                                th ID
+                                th Judul Draft
+                                th Tahun
+                                th Pemohon
+                                th Status
+                                th.text-center Aksi
+                        tbody
+                            each draft in notReviewed
+                                tr
+                                    td= draft.id
+                                    td.font-weight-bold= draft.draft_title
+                                    td= draft.procurement_year
+                                    td= draft.full_name
+                                    td
+                                        if draft.draft_status == 'DIAJUKAN'
+                                            span.badge.badge-info Diajukan
+                                        else
+                                            span.badge.badge-light= draft.draft_status
+                                    td.text-center
+                                        a.btn.btn-info.btn-sm.mr-1(
+                                            href=`/review-procurement/${draft.id}`
+                                            title='Detail'
+                                        )
+                                            i.fas.fa-eye
 
-                    tr
-
-                        th ID
-
-                        th Tahun
-
-                        th Pemohon
-
-                        th Status
-
-                        th Aksi
-
-                tbody
-
-                    each draft in drafts
-
-                        tr
-
-                            td= draft.id
-
-                            td= draft.procurement_year
-
-                            td= draft.full_name
-
-                            td= draft.draft_status
-
-                            td
-
-                                a.btn.btn-info(
-                                    href=`/review-procurement/${draft.id}`
-                                )
-                                    | Detail
+            //- Bagian 2: Sedang Direview (SEDANG_DIREVIEW)
+            .table-responsive
+                h5.mb-3 Pengadaan — Sedang Direview
+                if !reviewing || reviewing.length === 0
+                    p.text-muted Tidak ada pengadaan yang sedang direview.
+                else
+                    table.table.table-dark.table-hover.table-borderless
+                        thead
+                            tr
+                                th ID
+                                th Judul Draft
+                                th Tahun
+                                th Pemohon
+                                th Status
+                                th.text-center Aksi
+                        tbody
+                            each draft in reviewing
+                                tr
+                                    td= draft.id
+                                    td.font-weight-bold= draft.draft_title
+                                    td= draft.procurement_year
+                                    td= draft.full_name
+                                    td
+                                        if draft.draft_status == 'SEDANG_DIREVIEW'
+                                            span.badge.badge-warning Sedang Direview
+                                        else
+                                            span.badge.badge-light= draft.draft_status
+                                    td.text-center
+                                        a.btn.btn-info.btn-sm.mr-1(
+                                            href=`/review-procurement/${draft.id}`
+                                            title='Detail'
+                                        )
+                                            i.fas.fa-eye

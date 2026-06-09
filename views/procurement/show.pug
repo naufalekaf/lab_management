@@ -5,34 +5,41 @@ block content
   .container-fluid
 
     .row
-
       .col-md-12
 
-        .card
-
-          .card-header
-
-            h3.card-title Detail Draft Pengadaan
+        .card.user-card
 
           .card-body
 
-            table.table.table-bordered
+            .d-flex.justify-content-between.align-items-center.mb-4
+
+              div
+                h3.text-white.mb-1 Detail Draft Pengadaan
+                p.text-muted.mb-0 Informasi draft pengadaan.
+
+              span.badge.badge-pill.px-3.py-2(
+                class=
+                draft.draft_status === 'DRAF' ? 'badge-secondary' :
+                    draft.draft_status === 'DIAJUKAN' ? 'badge-info' :
+                        draft.draft_status === 'DIREVIEW' ? 'badge-warning' :
+                            draft.draft_status === 'DISETUJUI' ? 'badge-success' :
+                                'badge-danger'
+              )= draft.draft_status
+
+            table.table.table-dark.table-borderless
 
               tr
-                th Judul Draft
+                th(style="width:220px") Judul Draft
                 td= draft.draft_title
 
               tr
-                th Tahun
+                th Tahun Pengadaan
                 td= draft.procurement_year
-
-              tr
-                th Status
-                td= draft.draft_status
 
               tr
                 th Catatan
                 td= draft.notes || '-'
+
 
     if draft.draft_status === 'DRAF' || draft.draft_status === 'DIAJUKAN'
 
@@ -40,20 +47,19 @@ block content
 
         .col-md-12
 
-          .card
-
-            .card-header
-
-              h3.card-title Tambah Barang
+          .card.user-card
 
             .card-body
 
+              h4.text-white.mb-1 Tambah Barang
+              p.text-muted.mb-4 Tambahkan barang yang akan diajukan pada draft ini.
+
               form(
-                action="/procurementItem/store"
+                action="/procurement-item/store"
                 method="POST"
               )
 
-                input(
+                input.form-control.input-gray(
                   type="hidden"
                   name="draft_id"
                   value=draft.id
@@ -63,25 +69,54 @@ block content
 
                   label Jenis Barang
 
-                  select.form-control(
+                  select.form-control.input-gray(
                     name="item_type"
+                    id="item_type"
                     required
                   )
 
                     option(value="")
-                      | Pilih Jenis
+                      Pilih Jenis
 
                     option(value="INVENTARIS")
-                      | Inventaris
+                      |Inventaris
 
                     option(value="BHP")
-                      | BHP
+                      |BHP
+
+                #inventory-category-group.form-group.mt-2
+
+                  label Kategori Inventaris
+
+                  select.form-control.input-gray(
+                    name="inventory_category_id"
+                  )
+
+                    option(value="")
+                      Pilih Kategori
+
+                      each category in inventoryCategories
+                        option(value=category.id)= category.category_name
+
+                #consumable-category-group.form-group.mt-2(style="display:none")
+
+                  label Kategori BHP
+
+                  select.form-control.input-gray(
+                    name="consumable_category_id"
+                  )
+
+                    option(value="")
+                      Pilih Kategori
+
+                      each category in consumableCategories
+                        option(value=category.id)= category.category_name
 
                 .form-group.mt-2
 
                   label Nama Barang
 
-                  input.form-control(
+                  input.form-control.input-gray(
                     type="text"
                     name="item_name"
                     required
@@ -91,7 +126,7 @@ block content
 
                   label Jumlah
 
-                  input.form-control(
+                  input.form-control.input-gray(
                     type="number"
                     name="quantity"
                     required
@@ -99,11 +134,11 @@ block content
 
                 .form-group.mt-2
 
-                  label Estimasi Harga
+                  label Harga Satuan
 
-                  input.form-control(
+                  input.form-control.input-gray(
                     type="number"
-                    name="estimated_price"
+                    name="unit_price"
                     required
                   )
 
@@ -111,89 +146,98 @@ block content
 
                   label Link Pembelian
 
-                  input.form-control(
+                  input.form-control.input-gray(
                     type="text"
                     name="purchase_link"
                   )
 
+                #replacement-group.form-group.mt-2
+
+                  label Inventaris Yang Digantikan
+
+                  select.form-control.input-gray(
+                    name="replacement_inventory_id"
+                  )
+
+                    option(value="")
+                      Tidak Menggantikan Inventaris
+
+                      each inventory in inventories
+                        option(value=inventory.id)= `${inventory.inventory_code} - ${inventory.inventory_name}`
+
                 br
 
-                button.btn.btn-success(
-                  type="submit"
-                )
-                  | Simpan Barang
+                .d-flex.justify-content-end.mt-4
+
+                  button.btn.btn-primary(
+                    type="submit"
+                  )
+                    | Simpan Barang
 
     .row.mt-3
 
       .col-md-12
 
-        .card
-
-          .card-header.d-flex.justify-content-between
-
-            h3.card-title Daftar Barang
-
+        .card.user-card
 
           .card-body
 
-            table.table.table-bordered.table-striped
+            .d-flex.justify-content-between.align-items-center.mb-4
+
+              div
+                h4.text-white.mb-1 Daftar Barang
+                p.text-muted.mb-0 Barang yang sudah ditambahkan ke draft.
+
+            table.table.table-dark.table-hover.table-borderless
 
               thead
-
                 tr
-
                   th No
-
                   th Jenis
-
+                  th Kategori
                   th Nama Barang
-
                   th Jumlah
-
-                  th Harga
-
+                  th Harga Satuan
+                  th Total Harga
+                  th Inventaris Diganti
                   th Status
-
                   th(width="150") Aksi
 
               tbody
-
                 if items.length === 0
-
                   tr
-
-                    td(
-                      colspan="7"
-                      class="text-center"
-                    )
-                      | Belum ada barang
-
+                    td(colspan="10" class="text-center") Belum ada barang
                 else
-
                     each item, index in items
-
                       tr
-
                         td= index + 1
-
                         td= item.item_type
-
+                        td= item.inventory_category_name || item.consumable_category_name || '-'
                         td= item.item_name
-
                         td= item.quantity
-
-                        td= item.estimated_price
-
-                        td= item.approval_status
-
+                        td= Number(item.unit_price).toLocaleString('id-ID')
+                        td= Number(item.total_price).toLocaleString('id-ID')
+                        td= item.replacement_inventory_name || '-'
                         td
+                          if item.approval_status == 'MENUNGGU'
+                            span.badge.badge-warning Menunggu
+
+                          else if item.approval_status == 'DISETUJUI'
+                            span.badge.badge-success Disetujui
+
+                          else if item.approval_status == 'DITOLAK'
+                            span.badge.badge-danger Ditolak
+
+                          else
+                            span.badge.badge-secondary= item.approval_status
+                        td.text-center
 
                           if draft.draft_status == 'DRAF' || draft.draft_status === 'DIAJUKAN'
 
-                            a.btn.btn-warning.btn-sm(
+                            a.btn.btn-warning.btn-sm.mr-1(
                               href=`/procurement-item/${item.id}/edit`
                             )
-                              | Edit
+                              i.fas.fa-edit
 
                             form(
                               action=`/procurement-item/${item.id}/delete`
@@ -201,31 +245,77 @@ block content
                               style="display:inline;"
                             )
 
-                              button.btn.btn-danger.btn-sm.ml-3(
+                              button.btn.btn-danger.btn-sm(
                                 type="submit"
                                 onclick="return confirm('Hapus barang?')"
                               )
-                                | Hapus
+                                i.fas.fa-trash
+
+
 
     .row.mt-3
 
-      .col-md-12.d-flex.justify-content-between
+      .col-md-12
 
-        a.btn.btn-secondary(
+        .card.user-card
+
+          .card-body.text-center
+
+            h6.text-muted.mb-2 Total Pengadaan
+
+            h2.text-white.mb-0
+              | Rp. #{Number(grandTotal).toLocaleString('id-ID')}
+
+    .row.mt-3
+
+      .col-md-12.d-flex.justify-content-end
+
+        a.btn.btn-secondary.mr-2(
           href="/procurement"
         )
           | Kembali
-
 
         if draft.draft_status === 'DRAF'
 
           form(
             action=`/procurement/${draft.id}/submit`
             method="POST"
+            style="display:inline;"
           )
 
             button.btn.btn-primary(
               type="submit"
-              onclick="return confirm('Submit draft pengadaan? Setelah submit tidak dapat diubah.')"
+              onclick="return confirm('Ajukan draft pengadaan? Setelah diajukan data tidak dapat diubah.')"
             )
-              | Submit Pengadaan
+              | Ajukan Pengadaan
+
+
+  script.
+      (function() {
+          const itemType = document.getElementById('item_type');
+          const inventoryCategoryGroup = document.getElementById('inventory-category-group');
+          const consumableCategoryGroup = document.getElementById('consumable-category-group');
+          const replacementGroup = document.getElementById('replacement-group');
+
+          function updateForm() {
+              if (!itemType) return;
+              if (itemType.value === 'INVENTARIS') {
+                  if (inventoryCategoryGroup) inventoryCategoryGroup.style.display = 'block';
+                  if (consumableCategoryGroup) consumableCategoryGroup.style.display = 'none';
+                  if (replacementGroup) replacementGroup.style.display = 'block';
+              } else if (itemType.value === 'BHP') {
+                  if (inventoryCategoryGroup) inventoryCategoryGroup.style.display = 'none';
+                  if (consumableCategoryGroup) consumableCategoryGroup.style.display = 'block';
+                  if (replacementGroup) replacementGroup.style.display = 'none';
+              } else {
+                  if (inventoryCategoryGroup) inventoryCategoryGroup.style.display = 'none';
+                  if (consumableCategoryGroup) consumableCategoryGroup.style.display = 'none';
+                  if (replacementGroup) replacementGroup.style.display = 'none';
+              }
+          }
+
+          if (itemType) {
+              itemType.addEventListener('change', updateForm);
+              updateForm();
+          }
+      })();

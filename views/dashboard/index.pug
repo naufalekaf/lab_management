@@ -3,29 +3,121 @@ extends ../layouts/main
 block content
 
   .row
-
     .col-md-12
-
       .card
-
         .card-body
-          .row.g-10
+          .row
 
+            //- ADMIN STATS
             if totalUsers !== undefined
-              .col-md-4
+              .col-md-4.mb-3
                 .stat-box.border-info
                   h3= totalUsers
-                  h6.mt-2 Total Pengguna
+                  h6.mt-2.mb-0 Total Pengguna
 
             if activeUsers !== undefined
-              .col-md-4
+              .col-md-4.mb-3
                 .stat-box.border-success
                   h3= activeUsers
-                  h6.mt-2 Pengguna Aktif
+                  h6.mt-2.mb-0 Pengguna Aktif
 
             if totalRooms !== undefined
-              .col-md-4
+              .col-md-4.mb-3
                 .stat-box.border-warning
                   h3= totalRooms
-                  h6.mt-2 Ruangan
+                  h6.mt-2.mb-0 Ruangan
 
+            //- KEPALA LAB STATS
+            if totalProcurements !== undefined && !isKaprodi
+              .col-md-6.mb-3
+                .stat-box.border-primary
+                  h3= totalProcurements
+                  h6.mt-2.mb-0 Total Pengadaan
+
+            if submittedCount !== undefined && !isKaprodi
+              .col-md-6.mb-3
+                .stat-box.border-warning
+                  h3= submittedCount
+                  h6.mt-2.mb-0 Status Diajukan
+
+            if reviewingCount !== undefined && !isKaprodi
+              .col-md-6.mb-3
+                .stat-box.border-info
+                  h3= reviewingCount
+                  h6.mt-2.mb-0 Sedang Direview
+
+            if lockedCount !== undefined && !isKaprodi
+              .col-md-6.mb-3
+                .stat-box.border-success
+                  h3= lockedCount
+                  h6.mt-2.mb-0 Terkunci
+
+            //- KAPRODI STATS (mirip Head but show money locked)
+            if isKaprodi
+              .col-md-6.mb-3
+                .stat-box.border-primary
+                  h3= totalProcurements
+                  h6.mt-2.mb-0 Total Pengadaan
+              .col-md-6.mb-3
+                .stat-box.border-success
+                  h3= lockedCount
+                  h6.mt-2.mb-0 Draft Terkunci
+
+
+  //- =============================
+  //- DAFTAR PENGADAAN
+  //- =============================
+  if procurements !== undefined && procurements !== null
+    .row.mt-4
+      .col-md-12
+        .card
+          .card-header
+            h3.card-title Daftar Pengadaan
+          .card-body
+            if !procurements || procurements.length === 0
+              .alert.alert-info Tidak ada pengadaan yang diajukan.
+            else
+              .table-responsive
+                table.table.table-dark.table-hover.table-borderless
+                  thead
+                    tr
+                      th No
+                      th Judul Draft
+                      th Tahun
+                      th Dibuat Oleh
+                      th.text-center Total Item
+                      th.text-right Grand Total
+                      th Status
+                      th Tanggal Submit
+                      th Aksi
+                  tbody
+                      each procurement, index in procurements
+                        tr
+                          td= index + 1
+                          td= procurement.draft_title
+                          td.text-center= procurement.procurement_year
+                          td= procurement.created_by_name
+                          td.text-center= procurement.total_items
+                          // jika kaprodi: hanya tampilkan uang untuk TERKUNCI; jika bukan kaprodi, tampilkan seperti biasa
+                          td.text-right
+                            if isKaprodi
+                              if procurement.draft_status === 'TERKUNCI'
+                                = (Number(procurement.grand_total) || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })
+                              else
+                                | -
+                            else
+                              = (Number(procurement.grand_total) || 0).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })
+                          td
+                            if procurement.draft_status === 'DIAJUKAN'
+                              span.badge.badge-warning DIAJUKAN
+                            else if procurement.draft_status === 'SEDANG_DIREVIEW'
+                              span.badge.badge-info SEDANG DIREVIEW
+                            else if procurement.draft_status === 'TERKUNCI'
+                              span.badge.badge-success TERKUNCI
+                            else
+                              span.badge.badge-secondary= procurement.draft_status
+                          td.small= procurement.submitted_at ? new Date(procurement.submitted_at).toLocaleDateString('id-ID') : '-'
+                          td
+                            a.btn.btn-info.btn-sm(href=`/review-procurement/${procurement.id}`)
+                              i.fas.fa-eye.mr-1
+                              | Lihat

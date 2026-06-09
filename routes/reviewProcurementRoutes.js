@@ -8,7 +8,7 @@ router.get('/review-procurement/:id', authMiddleware.isLoggedIn, reviewProcureme
 router.post('/review-procurement/item/:id/approve',authMiddleware.isLoggedIn,  reviewProcurementController.approveItem);
 router.post('/review-procurement/item/:id/reject',authMiddleware.isLoggedIn,  reviewProcurementController.rejectItem);
 router.post('/review-procurement/:id/finalize',authMiddleware.isLoggedIn,  reviewProcurementController.finalizeDraft);
-router.post('/:id/start-review',authMiddleware.isLoggedIn, reviewProcurementController.startReview);
+router.post('/review-procurement/:id/start-review', authMiddleware.isLoggedIn, reviewProcurementController.startReview);
 
 
 module.exports = router;

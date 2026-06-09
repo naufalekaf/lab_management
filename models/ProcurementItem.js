@@ -23,10 +23,12 @@ const ProcurementItem = sequelize.define('ProcurementItem', {
 
     inventory_category_id: {
         type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true
     },
 
     consumable_category_id: {
         type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true
     },
 
     item_name: {
@@ -39,8 +41,13 @@ const ProcurementItem = sequelize.define('ProcurementItem', {
         allowNull: false,
     },
 
-    estimated_price: {
-        type: DataTypes.DECIMAL(15, 2),
+    unit_price: {
+        type: DataTypes.DECIMAL(15,2),
+        allowNull: false,
+    },
+
+    total_price: {
+        type: DataTypes.DECIMAL(15,2),
         allowNull: false,
     },
 
@@ -62,7 +69,8 @@ const ProcurementItem = sequelize.define('ProcurementItem', {
     },
 
     replacement_inventory_id: {
-        type: DataTypes.BIGINT.UNSIGNED,
+        type: DataTypes.INTEGER,
+        allowNull: true,
     },
 
 }, {
