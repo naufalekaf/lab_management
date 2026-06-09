@@ -216,11 +216,6 @@ const goodsReceiptController = {
 
                 for (let i = 0; i < received_quantity; i++) {
                     const tempCode = `INV-TEMP-${receipt.id}-${i + 1}-${Date.now()}`;
-                    const qrPath = `/uploads/qrcodes/${tempCode}.png`;
-                    const fullQrPath = path.join(__dirname, '../public', qrPath);
-
-                    // Generate temporary QR code
-                    await QRCode.toFile(fullQrPath, tempCode);
 
                     await Inventory.create({
                         category_id: catId,
@@ -231,7 +226,7 @@ const goodsReceiptController = {
                         purchase_date: finalDate,
                         condition_status: 'BAIK',
                         inventory_status: 'AKTIF',
-                        qr_code_path: qrPath
+                        qr_code_path: null
                     });
                 }
             }
@@ -305,25 +300,23 @@ const goodsReceiptController = {
                 imagePath = `/uploads/photos/${req.file.filename}`;
             }
 
-            // Regenerate QR code if inventory_code changed
-            let qrCodePath = inventory.qr_code_path;
-            if (inventory_code !== inventory.inventory_code) {
-                const qrPath = `/uploads/qrcodes/${inventory_code}.png`;
-                const fullQrPath = path.join(__dirname, '../public', qrPath);
-                await QRCode.toFile(fullQrPath, inventory_code);
-                qrCodePath = qrPath;
+            // Regenerate QR code for the inventory_code
+            const safeFileName = inventory_code.replace(/[^a-zA-Z0-9-]/g, '_');
+            const qrPath = `/uploads/qrcodes/${safeFileName}.png`;
+            const fullQrPath = path.join(__dirname, '../public', qrPath);
+            await QRCode.toFile(fullQrPath, inventory_code);
+            const qrCodePath = qrPath;
 
-                // Delete old QR code file if exists and is different
-                try {
-                    if (inventory.qr_code_path) {
-                        const oldQrPath = path.join(__dirname, '../public', inventory.qr_code_path);
-                        if (fs.existsSync(oldQrPath)) {
-                            fs.unlinkSync(oldQrPath);
-                        }
+            // Delete old QR code file if exists and is different from the new path
+            try {
+                if (inventory.qr_code_path && inventory.qr_code_path !== qrPath) {
+                    const oldQrPath = path.join(__dirname, '../public', inventory.qr_code_path);
+                    if (fs.existsSync(oldQrPath)) {
+                        fs.unlinkSync(oldQrPath);
                     }
-                } catch (e) {
-                    console.error('Error deleting old QR code:', e);
                 }
+            } catch (e) {
+                console.error('Error deleting old QR code:', e);
             }
 
             await inventory.update({
